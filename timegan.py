@@ -270,7 +270,7 @@ def timegan (ori_data, parameters):
       eta_datetime = now + timedelta(seconds=eta_secs)
       print('step: '+ str(itt) + '/' + str(iterations) + ', e_loss: ' + str(np.round(np.sqrt(step_e_loss),4)))
       if itt!=0:
-        print('\tTiempo transcurrido: ' , round(end - start,1), " sgs." , "ETA: ", round(eta_secs/60,1), " mins.", "Terminará a las : ", eta_datetime)
+        print('\tElapsed time: ' , round(end - start,1), " sgs." , "ETA: ", round(eta_secs/60,1), " mins.",  eta_datetime)
       start=time.time()
       
   print('Finish Embedding Network Training')
@@ -294,7 +294,7 @@ def timegan (ori_data, parameters):
       eta_datetime = now + timedelta(seconds=eta_secs)
       print('step: '+ str(itt)  + '/' + str(iterations) +', s_loss: ' + str(np.round(np.sqrt(step_g_loss_s),4)))
       if itt != 0:
-        print('\tTiempo transcurrido: ' , round(end - start,1), " sgs." , "ETA: ", round(eta_secs/60,1), " mins.", "Terminará a las : ", eta_datetime)
+        print('\tElapsed time: ' , round(end - start,1), " sgs." , "ETA: ", round(eta_secs/60,1), " mins.",  eta_datetime)
       start=time.time()
 
       
@@ -340,8 +340,8 @@ def timegan (ori_data, parameters):
             ', g_loss_v: ' + str(np.round(step_g_loss_v,4)) + 
             ', e_loss_t0: ' + str(np.round(np.sqrt(step_e_loss_t0),4)))
       if itt != 0:
-        print('\tTiempo transcurrido: ', round(end - start, 1), " sgs.", "ETA: ", round(eta_secs / 60, 1), " mins.",
-              "Terminará a las : ", eta_datetime)
+        print('\tElapsed time: ', round(end - start, 1), " sgs.", "ETA: ", round(eta_secs / 60, 1), " mins.",
+               eta_datetime)
       start=time.time()
 
 
