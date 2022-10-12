@@ -100,10 +100,8 @@ def real_data_loading (data_name, seq_len):
   Returns:
     - data: preprocessed data.
   """
-  print ("antes de leer")
   assert data_name in ['stock','energy','trivial','natural','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut']
-  print("Cargando datos: ")
-  print(data_name)
+  print("Cargando datos: ", data_name)
   if data_name == 'stock':
     ori_data = np.loadtxt('data/stock_data.csv', delimiter = ",",skiprows = 1)
   elif data_name == 'energy':
@@ -143,7 +141,7 @@ def real_data_loading (data_name, seq_len):
 
   # Preprocess the dataset
   temp_data = []
-  print("Cortando los datos:")
+  print("Cortando los datos.")
   # Cut data by sequence length
   for i in range(0, len(ori_data) - seq_len + 1):
     _x = ori_data[i:i + seq_len]
@@ -159,6 +157,4 @@ def real_data_loading (data_name, seq_len):
   for i in range(len(temp_data)):
     data.append(temp_data[idx[i]])
 
-  print("Antes de devolver los datos cargados.")
-  #fullprint(data)
   return data
