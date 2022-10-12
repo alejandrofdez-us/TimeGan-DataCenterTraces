@@ -23,6 +23,13 @@ data_loading.py
 ## Necessary Packages
 import numpy as np
 
+def fullprint(*args, **kwargs):
+  from pprint import pprint
+  import numpy
+  opt = numpy.get_printoptions()
+  numpy.set_printoptions(threshold=numpy.inf)
+  pprint(*args, **kwargs)
+  numpy.set_printoptions(**opt)
 
 def MinMaxScaler(data):
   """Min Max normalizer.
@@ -33,11 +40,17 @@ def MinMaxScaler(data):
   Returns:
     - norm_data: normalized data
   """
-  numerator = data - np.min(data, 0)
-  denominator = np.max(data, 0) - np.min(data, 0)
+  min= np.min(data,0)
+  max = np.max(data, 0)
+  numerator = data - min
+  denominator = max - min
   norm_data = numerator / (denominator + 1e-7)
-  return norm_data
+  return norm_data, min, max
 
+def MinMaxUnscaler(data, min, max):
+  denominator = max - min
+  un_norm_data = data * (denominator + 1e-7)
+  return un_norm_data + min
 
 def sine_data_generation (no, seq_len, dim):
   """Sine data generation.
@@ -52,7 +65,7 @@ def sine_data_generation (no, seq_len, dim):
   """  
   # Initialize the output
   data = list()
-
+  print("Sine generation")
   # Generate sine data
   for i in range(no):      
     # Initialize each time-series
@@ -86,30 +99,66 @@ def real_data_loading (data_name, seq_len):
     
   Returns:
     - data: preprocessed data.
-  """  
-  assert data_name in ['stock','energy']
-  
+  """
+  print ("antes de leer")
+  assert data_name in ['stock','energy','trivial','natural','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut']
+  print("Cargando datos: ")
+  print(data_name)
   if data_name == 'stock':
     ori_data = np.loadtxt('data/stock_data.csv', delimiter = ",",skiprows = 1)
   elif data_name == 'energy':
     ori_data = np.loadtxt('data/energy_data.csv', delimiter = ",",skiprows = 1)
-        
+  elif data_name == 'trivial':
+    ori_data = np.loadtxt('data/mytrivialdata.csv', delimiter=",", skiprows=1)
+  elif data_name == 'natural':
+    ori_data = np.loadtxt('data/natural_numbers_data.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibaba100':
+    ori_data = np.loadtxt('data/day3_first_100.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibaba500':
+    ori_data = np.loadtxt('data/day3_first_500.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibaba1000':
+    ori_data = np.loadtxt('data/day3_first_1000.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibaba10k':
+    ori_data = np.loadtxt('data/day3_first_10000.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibaba50k':
+    ori_data = np.loadtxt('data/day3_first_50000.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibaba50kcut':
+    ori_data = np.loadtxt('data/day3_first_50000_cut.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibaba1M':
+    ori_data = np.loadtxt('data/day3_first_1M.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibabacompleto':
+    ori_data = np.loadtxt('data/mu_day3.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibabacompletocut':
+    ori_data = np.loadtxt('data/mu_day3_cut.csv', delimiter=",", skiprows=1)
+
+
+  print("Empieza flip")
+  #fullprint(ori_data)
   # Flip the data to make chronological data
   ori_data = ori_data[::-1]
+  print("Datos después de flip:")
+  #fullprint(ori_data)
   # Normalize the data
-  ori_data = MinMaxScaler(ori_data)
-    
+  # ori_data, min, max = MinMaxScaler(ori_data)
+
   # Preprocess the dataset
-  temp_data = []    
+  temp_data = []
+  print("Cortando los datos:")
   # Cut data by sequence length
-  for i in range(0, len(ori_data) - seq_len):
+  for i in range(0, len(ori_data) - seq_len + 1):
     _x = ori_data[i:i + seq_len]
     temp_data.append(_x)
+    #print("corte #:", i)
+    #fullprint(_x)
         
   # Mix the datasets (to make it similar to i.i.d)
-  idx = np.random.permutation(len(temp_data))    
+  idx = np.random.permutation(len(temp_data))
+  #print("índex idx:")
+  #fullprint (idx)
   data = []
   for i in range(len(temp_data)):
     data.append(temp_data[idx[i]])
-    
+
+  print("Antes de devolver los datos cargados.")
+  #fullprint(data)
   return data
