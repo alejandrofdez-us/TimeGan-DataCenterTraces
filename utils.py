@@ -74,6 +74,7 @@ def extract_time (data):
   max_seq_len = 0
   for i in range(len(data)):
     max_seq_len = max(max_seq_len, len(data[i][:,0]))
+    #print("max_seq_len",)
     time.append(len(data[i][:,0]))
     
   return time, max_seq_len
@@ -122,6 +123,29 @@ def random_generator (batch_size, z_dim, T_mb, max_seq_len):
     Z_mb.append(temp_Z)
   return Z_mb
 
+
+def random_generator_alt (batch_size, z_dim, T_mb, max_seq_len):
+  """Random vector generation.
+
+  Args:
+    - batch_size: size of the random vector
+    - z_dim: dimension of random vector
+    - T_mb: time information for the random vector
+    - max_seq_len: maximum sequence length
+
+  Returns:
+    - Z_mb: generated random vector
+  """
+  Z_mb = list()
+  print("len(T_mb)", len(T_mb))
+  print("batch_size", batch_size)
+  for i in range(batch_size):
+    temp = np.zeros([max_seq_len, z_dim])
+    # print ("i", i)
+    temp_Z = np.random.uniform(0., 1, [T_mb[i], z_dim])
+    temp[:T_mb[i], :] = temp_Z
+    Z_mb.append(temp_Z)
+  return Z_mb
 
 def batch_generator(data, time, batch_size):
   """Mini-batch generator.

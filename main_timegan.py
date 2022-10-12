@@ -27,6 +27,8 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import os
+
 import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
@@ -40,6 +42,13 @@ from metrics.discriminative_metrics import discriminative_score_metrics
 from metrics.predictive_metrics import predictive_score_metrics
 from metrics.visualization_metrics import visualization
 
+def fullprint(*args, **kwargs):
+  from pprint import pprint
+  import numpy
+  opt = numpy.get_printoptions()
+  numpy.set_printoptions(threshold=numpy.inf)
+  pprint(*args, **kwargs)
+  numpy.set_printoptions(**opt)
 
 def main (args):
   """Main function for timeGAN experiments.
@@ -54,6 +63,7 @@ def main (args):
       - iteration: number of training iterations
       - batch_size: the number of samples in each batch
     - metric_iteration: number of iterations for metric computation
+    - n_samples: number of samples to be genereated
   
   Returns:
     - ori_data: original data
@@ -61,7 +71,7 @@ def main (args):
     - metric_results: discriminative and predictive scores
   """
   ## Data loading
-  if args.data_name in ['stock', 'energy']:
+  if args.data_name in ['stock', 'energy','trivial','natural','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut']:
     ori_data = real_data_loading(args.data_name, args.seq_len)
   elif args.data_name == 'sine':
     # Set number of samples and its dimensions
@@ -78,6 +88,8 @@ def main (args):
   parameters['num_layer'] = args.num_layer
   parameters['iterations'] = args.iteration
   parameters['batch_size'] = args.batch_size
+  parameters['n_samples'] = args.n_samples
+  n_samples = args.n_samples
       
   generated_data = timegan(ori_data, parameters)   
   print('Finish Synthetic Data Generation')
@@ -88,7 +100,10 @@ def main (args):
   
   # 1. Discriminative Score
   discriminative_score = list()
+  i=1
   for _ in range(args.metric_iteration):
+    print("Iteracion", i, "de", args.metric_iteration,"de discriminative score")
+    i += 1
     temp_disc = discriminative_score_metrics(ori_data, generated_data)
     discriminative_score.append(temp_disc)
       
@@ -96,18 +111,24 @@ def main (args):
       
   # 2. Predictive score
   predictive_score = list()
+  i=1
   for tt in range(args.metric_iteration):
+    print("Iteracion",i, "de", args.metric_iteration,"de predictive score")
+    i+=1
     temp_pred = predictive_score_metrics(ori_data, generated_data)
     predictive_score.append(temp_pred)   
-      
-  metric_results['predictive'] = np.mean(predictive_score)     
-          
-  # 3. Visualization (PCA and tSNE)
-  visualization(ori_data, generated_data, 'pca')
-  visualization(ori_data, generated_data, 'tsne')
-  
-  ## Print discriminative and predictive scores
+
+  print("Finalizando scores de prediccion")
+  metric_results['predictive'] = np.mean(predictive_score)
+  # Print discriminative and predictive scores
   print(metric_results)
+
+  # 3. Visualization (PCA and tSNE)
+  print("Creando graficas PCA y tSNE")
+  visualization(ori_data, generated_data, 'pca', n_samples)
+  visualization(ori_data, generated_data, 'tsne', n_samples)
+  
+  #
 
   return ori_data, generated_data, metric_results
 
@@ -118,7 +139,7 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--data_name',
-      choices=['sine','stock','energy'],
+      choices=['sine','stock','energy','trivial','natural', 'alibaba100','alibaba500','alibaba1000', 'alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut'],
       default='stock',
       type=str)
   parser.add_argument(
@@ -156,8 +177,24 @@ if __name__ == '__main__':
       help='iterations of the metric computation',
       default=10,
       type=int)
+  parser.add_argument(
+      '--n_samples',
+      help='number of samples to be generated',
+      default=150,
+      type=int)
   
   args = parser.parse_args() 
   
-  # Calls main function  
+  # Calls main function
   ori_data, generated_data, metrics = main(args)
+
+  print("Metrics")
+  fullprint(metrics)
+
+  generated_data_np_array = np.asarray(generated_data)
+  i=0
+  directory_name = "generated_data/"+args.data_name +"-iterations"+str(args.iteration)+"-"+"-seq_len"+str(args.seq_len)+"/"
+  os.makedirs(directory_name, exist_ok=True)
+  for generated_sample in generated_data_np_array:
+      np.savetxt(directory_name + args.data_name + "-"+ str(i) +".csv", generated_sample, delimiter=",", fmt='%f')
+      i=i+1

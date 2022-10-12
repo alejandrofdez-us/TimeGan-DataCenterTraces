@@ -23,17 +23,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
    
-def visualization (ori_data, generated_data, analysis):
+def visualization (ori_data, generated_data, analysis, n_samples=150):
   """Using PCA or tSNE for generated and original data visualization.
   
   Args:
     - ori_data: original data
     - generated_data: generated synthetic data
     - analysis: tsne or pca
+    - n_samples: n_samples to analyze
   """  
   # Analysis sample size (for faster computation)
-  anal_sample_no = min([1000, len(ori_data)])
-  idx = np.random.permutation(len(ori_data))[:anal_sample_no]
+  anal_sample_no = min([n_samples, len(ori_data)])
+  idx = np.random.permutation(n_samples)[:anal_sample_no]
+  print("idx",idx)
     
   # Data preprocessing
   ori_data = np.asarray(ori_data)
@@ -75,8 +77,12 @@ def visualization (ori_data, generated_data, analysis):
     plt.title('PCA plot')
     plt.xlabel('x-pca')
     plt.ylabel('y_pca')
-    plt.show()
-    
+    #plt.show()
+    print("Guardando PCA.png")
+    plt.savefig('generated_data/PCA.png')
+
+
+
   elif analysis == 'tsne':
     
     # Do t-SNE Analysis together       
@@ -99,4 +105,6 @@ def visualization (ori_data, generated_data, analysis):
     plt.title('t-SNE plot')
     plt.xlabel('x-tsne')
     plt.ylabel('y_tsne')
-    plt.show()    
+    #plt.show()
+    print("Guardando t-SNE.png")
+    plt.savefig('generated_data/t-SNE.png')
