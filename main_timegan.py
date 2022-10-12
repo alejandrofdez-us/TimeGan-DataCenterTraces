@@ -50,7 +50,7 @@ def fullprint(*args, **kwargs):
   pprint(*args, **kwargs)
   numpy.set_printoptions(**opt)
 
-def main (args):
+def main (args, dir_name):
   """Main function for timeGAN experiments.
   
   Args:
@@ -125,8 +125,8 @@ def main (args):
 
   # 3. Visualization (PCA and tSNE)
   print("Creando graficas PCA y tSNE")
-  visualization(ori_data, generated_data, 'pca', n_samples)
-  visualization(ori_data, generated_data, 'tsne', n_samples)
+  visualization(ori_data, generated_data, 'pca',dir_name,  n_samples)
+  visualization(ori_data, generated_data, 'tsne', dir_name, n_samples)
   
   #
 
@@ -184,17 +184,20 @@ if __name__ == '__main__':
       type=int)
   
   args = parser.parse_args() 
-  
+  directory_name = "generated_data/"+args.data_name +"-iterations"+str(args.iteration)+"-"+"-seq_len"+str(args.seq_len)+"/"
+
   # Calls main function
-  ori_data, generated_data, metrics = main(args)
+  ori_data, generated_data, metrics = main(args, directory_name)
 
   print("Metrics")
   fullprint(metrics)
 
   generated_data_np_array = np.asarray(generated_data)
   i=0
-  directory_name = "generated_data/"+args.data_name +"-iterations"+str(args.iteration)+"-"+"-seq_len"+str(args.seq_len)+"/"
   os.makedirs(directory_name, exist_ok=True)
+  with open(directory_name + 'metrics.txt', 'w') as f:
+      f.write(repr(metrics))
+
   for generated_sample in generated_data_np_array:
       np.savetxt(directory_name + args.data_name + "-"+ str(i) +".csv", generated_sample, delimiter=",", fmt='%f')
       i=i+1
