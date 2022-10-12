@@ -132,11 +132,11 @@ def real_data_loading (data_name, seq_len):
     ori_data = np.loadtxt('data/mu_day3_cut.csv', delimiter=",", skiprows=1)
 
 
-  print("Empieza flip")
+  #print("Empieza flip")
   #fullprint(ori_data)
   # Flip the data to make chronological data
-  ori_data = ori_data[::-1]
-  print("Datos después de flip:")
+  # ori_data = ori_data[::-1]
+  # print("Datos después de flip:")
   #fullprint(ori_data)
   # Normalize the data
   # ori_data, min, max = MinMaxScaler(ori_data)
