@@ -28,6 +28,7 @@ from __future__ import print_function
 
 import argparse
 import os
+from datetime import datetime
 
 import numpy as np
 import warnings
@@ -50,7 +51,7 @@ def fullprint(*args, **kwargs):
   pprint(*args, **kwargs)
   numpy.set_printoptions(**opt)
 
-def main (args):
+def main (args, experiment_root_directory_name):
   """Main function for timeGAN experiments.
   
   Args:
@@ -91,7 +92,7 @@ def main (args):
   parameters['n_samples'] = args.n_samples
   n_samples = args.n_samples
       
-  generated_data = timegan(ori_data, parameters)   
+  generated_data = timegan(ori_data, parameters, experiment_root_directory_name)
   print('Finish Synthetic Data Generation')
   
   ## Performance metrics   
@@ -125,8 +126,8 @@ def main (args):
 
   # 3. Visualization (PCA and tSNE)
   print("Creando graficas PCA y tSNE")
-  visualization(ori_data, generated_data, 'pca', n_samples)
-  visualization(ori_data, generated_data, 'tsne', n_samples)
+  visualization(ori_data, generated_data, 'pca', experiment_root_directory_name, n_samples)
+  visualization(ori_data, generated_data, 'tsne', experiment_root_directory_name, n_samples)
   
   #
 
@@ -183,18 +184,27 @@ if __name__ == '__main__':
       default=150,
       type=int)
   
-  args = parser.parse_args() 
-  
+  args = parser.parse_args()
+
+  experiment_root_directory_name = "experiments/"  + args.data_name + datetime.now().strftime(
+      "%m-%d-%Y-%H-%M")+"/"
+
   # Calls main function
-  ori_data, generated_data, metrics = main(args)
+  ori_data, generated_data, metrics = main(args, experiment_root_directory_name)
 
   print("Metrics")
   fullprint(metrics)
 
+
   generated_data_np_array = np.asarray(generated_data)
   i=0
-  directory_name = "generated_data/"+args.data_name +"-iterations"+str(args.iteration)+"-"+"-seq_len"+str(args.seq_len)+"/"
+  directory_name = experiment_root_directory_name +"generated_data/"
   os.makedirs(directory_name, exist_ok=True)
+
+  text_file = open(experiment_root_directory_name+"parameters.txt", "w")
+  n = text_file.write(str(args))
+  text_file.close()
+
   for generated_sample in generated_data_np_array:
-      np.savetxt(directory_name + args.data_name + "-"+ str(i) +".csv", generated_sample, delimiter=",", fmt='%f')
+      np.savetxt(directory_name + "sample_"+ str(i) +".csv", generated_sample, delimiter=",", fmt='%f')
       i=i+1

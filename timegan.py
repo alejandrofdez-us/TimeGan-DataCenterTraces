@@ -41,7 +41,8 @@ def fullprint(*args, **kwargs):
   pprint(*args, **kwargs)
   numpy.set_printoptions(**opt)
 
-def timegan (ori_data, parameters):
+def timegan (ori_data, parameters, experiment_root_directory_name
+):
   """TimeGAN function.
   
   Use original data as training set to generater synthetic data (time-series)
@@ -55,7 +56,10 @@ def timegan (ori_data, parameters):
   """
   # Initialization on the Graph
   print("Initialization on the Graph")
+
   tf.reset_default_graph()
+  sess = tf.Session()
+
 
   # Basic Parameters
   no, seq_len, dim = np.asarray(ori_data).shape
@@ -109,7 +113,7 @@ def timegan (ori_data, parameters):
   X = tf.placeholder(tf.float32, [None, max_seq_len, dim], name = "myinput_x")
   Z = tf.placeholder(tf.float32, [None, max_seq_len, z_dim], name = "myinput_z")
   T = tf.placeholder(tf.int32, [None], name = "myinput_t")
-  
+
   def embedder (X, T):
     """Embedding network between original feature space to latent space.
     
@@ -139,7 +143,7 @@ def timegan (ori_data, parameters):
     with tf.variable_scope("recovery", reuse = tf.AUTO_REUSE):       
       r_cell = tf.nn.rnn_cell.MultiRNNCell([rnn_cell(module_name, hidden_dim) for _ in range(num_layers)])
       r_outputs, r_last_states = tf.nn.dynamic_rnn(r_cell, H, dtype=tf.float32, sequence_length = T)
-      X_tilde = tf.contrib.layers.fully_connected(r_outputs, dim, activation_fn=tf.nn.sigmoid) 
+      X_tilde = tf.contrib.layers.fully_connected(r_outputs, dim, activation_fn=tf.nn.sigmoid)
     return X_tilde
     
   def generator (Z, T):  
@@ -190,7 +194,8 @@ def timegan (ori_data, parameters):
       Y_hat = tf.contrib.layers.fully_connected(d_outputs, 1, activation_fn=None) 
     return Y_hat   
     
-  # Embedder & Recovery
+
+  #Embedder & Recovery
   H = embedder(X, T)
   X_tilde = recovery(H, T)
     
@@ -201,7 +206,7 @@ def timegan (ori_data, parameters):
     
   # Synthetic data
   X_hat = recovery(H_hat, T)
-    
+
   # Discriminator
   Y_fake = discriminator(H_hat, T)
   Y_real = discriminator(H, T)     
@@ -249,11 +254,11 @@ def timegan (ori_data, parameters):
   G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list = g_vars + s_vars)      
   GS_solver = tf.train.AdamOptimizer().minimize(G_loss_S, var_list = g_vars + s_vars)   
         
+
   ## TimeGAN training
   print('Comienza entrenamiento')
-  sess = tf.Session()
   sess.run(tf.global_variables_initializer())
-    
+
   # 1. Embedding network training
   print('Start Embedding Network Training')
   start = time.time()
@@ -261,7 +266,7 @@ def timegan (ori_data, parameters):
     # Set mini-batch
     X_mb, T_mb = batch_generator(ori_data, ori_time, batch_size)           
     # Train embedder        
-    _, step_e_loss = sess.run([E0_solver, E_loss_T0], feed_dict={X: X_mb, T: T_mb})        
+    _, step_e_loss = sess.run([E0_solver, E_loss_T0], feed_dict={X: X_mb, T: T_mb})
     # Checkpoint
     if itt % 1000 == 0:
       end = time.time()
@@ -284,7 +289,7 @@ def timegan (ori_data, parameters):
     X_mb, T_mb = batch_generator(ori_data, ori_time, batch_size)    
     # Random vector generation   
     Z_mb = random_generator(batch_size, z_dim, T_mb, max_seq_len)
-    # Train generator       
+    # Train generator
     _, step_g_loss_s = sess.run([GS_solver, G_loss_S], feed_dict={Z: Z_mb, X: X_mb, T: T_mb})       
     # Checkpoint
     if itt % 1000 == 0:
@@ -302,7 +307,6 @@ def timegan (ori_data, parameters):
     
   # 3. Joint Training
   print('Start Joint Training')
-
   start = time.time()
   for itt in range(iterations):
     # Generator training (twice more than discriminator training)
@@ -347,12 +351,7 @@ def timegan (ori_data, parameters):
 
   print('Finish Joint Training')
     
-  ## Saving model
-  # simple_save(sess,
-  #             "models",
-  #             inputs={"myinput_x": X, "myinput_z": Z, "myinput_t": T },
-  #             outputs={"z": z}
-  #             )
+
   ## Synthetic data generation
   # Generation Parameters
   n_samples = parameters['n_samples']
@@ -367,6 +366,12 @@ def timegan (ori_data, parameters):
   generated_data_curr = sess.run(X_hat, feed_dict={Z: Z_mb, X: ori_data, T: ori_time[:n_samples]})
 
   print('Fin sess.run')
+
+  inputs = {"myinput_x": X, "myinput_z": Z, "myinput_t":T}
+  outputs = {"x_hat": X_hat}
+
+  tf.saved_model.simple_save(sess, experiment_root_directory_name+'/models/', inputs, outputs)
+
 
   generated_data = list()
 
