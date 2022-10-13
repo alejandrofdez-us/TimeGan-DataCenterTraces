@@ -185,6 +185,7 @@ if __name__ == '__main__':
   
   args = parser.parse_args() 
   directory_name = "generated_data/"+args.data_name +"-iterations"+str(args.iteration)+"-"+"-seq_len"+str(args.seq_len)+"/"
+  os.makedirs(directory_name, exist_ok=True)
 
   # Calls main function
   ori_data, generated_data, metrics = main(args, directory_name)
@@ -194,7 +195,6 @@ if __name__ == '__main__':
 
   generated_data_np_array = np.asarray(generated_data)
   i=0
-  os.makedirs(directory_name, exist_ok=True)
   with open(directory_name + 'metrics.txt', 'w') as f:
       f.write(repr(metrics))
 
