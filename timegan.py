@@ -91,7 +91,7 @@ def timegan (ori_data, parameters):
   # Normalization
   ori_data, min_val, max_val = MinMaxScaler(ori_data)
 
-  print("Datos después de normalización:")
+  # print("Datos después de normalización:")
   # fullprint(ori_data)
 
   ## Build a RNN networks
@@ -294,7 +294,7 @@ def timegan (ori_data, parameters):
       eta_datetime = now + timedelta(seconds=eta_secs)
       print('step: '+ str(itt)  + '/' + str(iterations) +', s_loss: ' + str(np.round(np.sqrt(step_g_loss_s),4)))
       if itt != 0:
-        print('\tElapsed time: ' , round(end - start,1), " sgs." , "ETA: ", round(eta_secs/60,1), " mins.",  eta_datetime)
+        print('\tElapsed time:' , round(end - start,1), " sgs." , "ETA:", round(eta_secs/60,1), " mins.",  eta_datetime)
       start=time.time()
 
       
