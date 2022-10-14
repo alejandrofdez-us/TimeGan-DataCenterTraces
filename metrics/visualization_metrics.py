@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
    
-def visualization (ori_data, generated_data, analysis, save_dir, n_samples=150):
+def visualization (ori_data, generated_data, analysis, experiment_root_directory_name, n_samples=150):
   """Using PCA or tSNE for generated and original data visualization.
   
   Args:
@@ -79,7 +79,7 @@ def visualization (ori_data, generated_data, analysis, save_dir, n_samples=150):
     plt.ylabel('y_pca')
     #plt.show()
     print("Guardando PCA.png")
-    plt.savefig(save_dir+'PCA.png')
+    plt.savefig(experiment_root_directory_name+'/PCA.png')
 
 
 
@@ -107,4 +107,4 @@ def visualization (ori_data, generated_data, analysis, save_dir, n_samples=150):
     plt.ylabel('y_tsne')
     #plt.show()
     print("Guardando t-SNE.png")
-    plt.savefig(save_dir+'t-SNE.png')
+    plt.savefig(experiment_root_directory_name+'/t-SNE.png')
