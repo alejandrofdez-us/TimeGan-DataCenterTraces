@@ -72,7 +72,7 @@ def main (args, experiment_root_directory_name):
     - metric_results: discriminative and predictive scores
   """
   ## Data loading
-  if args.data_name in ['stock', 'energy','trivial','natural','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut']:
+  if args.data_name in ['stock', 'energy','trivial','natural','batchtaskday3','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped']:
     ori_data = real_data_loading(args.data_name, args.seq_len)
   elif args.data_name == 'sine':
     # Set number of samples and its dimensions
@@ -128,8 +128,6 @@ def main (args, experiment_root_directory_name):
   print("Creando graficas PCA y tSNE")
   visualization(ori_data, generated_data, 'pca', experiment_root_directory_name, n_samples)
   visualization(ori_data, generated_data, 'tsne', experiment_root_directory_name, n_samples)
-  
-  #
 
   return ori_data, generated_data, metric_results
 
@@ -140,7 +138,7 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--data_name',
-      choices=['sine','stock','energy','trivial','natural', 'alibaba100','alibaba500','alibaba1000', 'alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut'],
+      choices=['sine','stock','energy','trivial','natural','batchtaskday3','alibaba100','alibaba500','alibaba1000', 'alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped'],
       default='stock',
       type=str)
   parser.add_argument(

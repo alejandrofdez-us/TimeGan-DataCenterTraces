@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
    
-def visualization (ori_data, generated_data, analysis, experiment_root_directory_name, n_samples=150):
+def visualization (ori_data, generated_data, analysis, path_for_saving_images, n_samples=150):
   """Using PCA or tSNE for generated and original data visualization.
   
   Args:
@@ -35,8 +35,7 @@ def visualization (ori_data, generated_data, analysis, experiment_root_directory
   # Analysis sample size (for faster computation)
   anal_sample_no = min([n_samples, len(ori_data)])
   idx = np.random.permutation(n_samples)[:anal_sample_no]
-  print("idx",idx)
-    
+
   # Data preprocessing
   ori_data = np.asarray(ori_data)
   generated_data = np.asarray(generated_data)  
@@ -79,7 +78,7 @@ def visualization (ori_data, generated_data, analysis, experiment_root_directory
     plt.ylabel('y_pca')
     #plt.show()
     print("Guardando PCA.png")
-    plt.savefig(experiment_root_directory_name+'/PCA.png')
+    plt.savefig(path_for_saving_images + '/PCA.png')
 
 
 
@@ -91,7 +90,7 @@ def visualization (ori_data, generated_data, analysis, experiment_root_directory
     # TSNE anlaysis
     tsne = TSNE(n_components = 2, verbose = 1, perplexity = 40, n_iter = 300)
     tsne_results = tsne.fit_transform(prep_data_final)
-      
+
     # Plotting
     f, ax = plt.subplots(1)
       
@@ -107,4 +106,4 @@ def visualization (ori_data, generated_data, analysis, experiment_root_directory
     plt.ylabel('y_tsne')
     #plt.show()
     print("Guardando t-SNE.png")
-    plt.savefig(experiment_root_directory_name+'/t-SNE.png')
+    plt.savefig(path_for_saving_images + '/t-SNE.png')
