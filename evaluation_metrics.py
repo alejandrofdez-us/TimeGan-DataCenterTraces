@@ -64,10 +64,10 @@ def main (args):
                 if metric == 'dtw': #mayor valor más distintas son
                     res = dtw_ndim.distance(generated_data_sample, ori_data_sample)
                     metrics_results[metric].append(res)
-                if metric == 'kl':
+                if metric == 'kl': #mayor valor peor
                     dist = KLdivergence(ori_data, generated_data_sample)
                     metrics_results[metric].append(dist)
-                if metric == 'cc':
+                if metric == 'cc': #mayor valor peor
                     ori_data_sample_numpy_pearson = np.corrcoef(ori_data_sample[:generated_data_sample.shape[0]])
                     generated_data_sample_numpy_pearson = np.corrcoef(generated_data_sample)
                     covariance_diff_matrix = ori_data_sample_numpy_pearson - generated_data_sample_numpy_pearson
