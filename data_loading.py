@@ -100,7 +100,7 @@ def real_data_loading (data_name, seq_len):
   Returns:
     - data: preprocessed data.
   """
-  assert data_name in ['stock','energy','trivial','natural','batchtaskday3','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped']
+  assert data_name in ['stock','energy','trivial','natural','batchtaskday3','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped','alibabacompletogroupedhour']
   print("Cargando datos: ", data_name)
   if data_name == 'stock':
     ori_data = np.loadtxt('data/stock_data.csv', delimiter = ",",skiprows = 1)
@@ -132,6 +132,8 @@ def real_data_loading (data_name, seq_len):
     ori_data = np.loadtxt('data/mu_day3_cut_timestamp_first_ordered.csv', delimiter=",")
   elif data_name == 'alibabacompletogrouped':
     ori_data = np.loadtxt('data/mu_day3_grouped.csv', delimiter=",", skiprows=1)
+  elif data_name == 'alibabacompletogroupedhour':
+    ori_data = np.loadtxt('data/mu_day3_grouped_hours.csv', delimiter=",", skiprows=1)
   elif data_name == 'batchtaskday3':
     ori_data = np.loadtxt('data/batch_task_day3_preprocessed.csv', delimiter=",", skiprows=1)
 
