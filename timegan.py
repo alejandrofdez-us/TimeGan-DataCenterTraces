@@ -362,10 +362,9 @@ def timegan (ori_data, parameters, experiment_root_directory_name
   #my_ori_time = [generated_seq_length,generated_seq_length]
   Z_mb = random_generator_alt(n_samples, z_dim, ori_time, max_seq_len)
   print('Finaliza Random generator')
-  print('Inicio sess.run')
   generated_data_curr = sess.run(X_hat, feed_dict={Z: Z_mb, X: ori_data, T: ori_time[:n_samples]})
 
-  print('Fin sess.run')
+  print('Finaliza generación sintética')
 
   inputs = {"myinput_x": X, "myinput_z": Z, "myinput_t":T}
   outputs = {"x_hat": X_hat}
