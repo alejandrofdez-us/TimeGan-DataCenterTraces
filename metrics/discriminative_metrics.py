@@ -17,8 +17,6 @@ Note: Use post-hoc RNN to classify original data and synthetic data
 
 Output: discriminative score (np.abs(classification accuracy - 0.5))
 """
-from datetime import time, datetime, timedelta
-
 # Necessary Packages
 import tensorflow as tf
 import numpy as np
@@ -116,15 +114,8 @@ def discriminative_score_metrics (ori_data, generated_data):
     _, step_d_loss = sess.run([d_solver, d_loss], 
                               feed_dict={X: X_mb, T: T_mb, X_hat: X_hat_mb, T_hat: T_hat_mb})
     if itt % 100 == 0:
-      end = time.time()
-      eta_secs = (end-start)*(iterations-itt)/100
-      now = datetime.now()
-      eta_datetime = now + timedelta(seconds=eta_secs)
       print('Internal step: '+ str(itt) + '/' + str(iterations) + ', step_d_loss: ' + str(np.round(np.sqrt(step_d_loss),4)))
-      if itt!=0:
-        print('\tElapsed time: ' , round(end - start,1), " sgs." , "ETA: ", round(eta_secs/60,1), " mins.",  eta_datetime)
-      start=time.time()
-    
+
   ## Test the performance on the testing set    
   y_pred_real_curr, y_pred_fake_curr = sess.run([y_pred_real, y_pred_fake], 
                                                 feed_dict={X: test_x, T: test_t, X_hat: test_x_hat, T_hat: test_t_hat})

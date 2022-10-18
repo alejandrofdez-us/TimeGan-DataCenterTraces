@@ -15,8 +15,6 @@ predictive_metrics.py
 
 Note: Use Post-hoc RNN to predict one-step ahead (last feature)
 """
-from datetime import time, datetime, timedelta
-
 # Necessary Packages
 import tensorflow as tf
 import numpy as np
@@ -103,14 +101,8 @@ def predictive_score_metrics (ori_data, generated_data):
     _, step_p_loss = sess.run([p_solver, p_loss], feed_dict={X: X_mb, T: T_mb, Y: Y_mb})
 
     if itt % 100 == 0:
-      end = time.time()
-      eta_secs = (end-start)*(iterations-itt)/100
-      now = datetime.now()
-      eta_datetime = now + timedelta(seconds=eta_secs)
       print('Internal step: '+ str(itt) + '/' + str(iterations) + ', step_p_loss: ' + str(np.round(np.sqrt(step_p_loss),4)))
-      if itt!=0:
-        print('\tElapsed time: ' , round(end - start,1), " sgs." , "ETA: ", round(eta_secs/60,1), " mins.",  eta_datetime)
-      start=time.time()
+
     
   ## Test the trained model on the original data
   idx = np.random.permutation(len(ori_data))
