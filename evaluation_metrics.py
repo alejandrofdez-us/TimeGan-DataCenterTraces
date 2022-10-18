@@ -7,6 +7,7 @@ import statistics
 import numpy as np
 import pandas as pd
 import scipy
+import pyinform
 
 from metrics.kl import KLdivergence
 from metrics.mmd import mmd_rbf
@@ -16,6 +17,21 @@ import torch
 import pandas
 from metrics.visualization_metrics import visualization
 
+import sklearn.metrics as metrics
+def regression_results(y_true, y_pred):
+    # Regression metrics
+    explained_variance=metrics.explained_variance_score(y_true, y_pred)
+    mean_absolute_error=metrics.mean_absolute_error(y_true, y_pred)
+    #mse=metrics.mean_squared_error(y_true, y_pred)
+    #mean_squared_log_error=metrics.mean_squared_log_error(y_true, y_pred)
+    median_absolute_error=metrics.median_absolute_error(y_true, y_pred)
+    r2=metrics.r2_score(y_true, y_pred)
+    print('explained_variance: ', round(explained_variance,4))
+    #print('mean_squared_log_error: ', round(mean_squared_log_error,4))
+    print('r2: ', round(r2,4))
+    print('MAE: ', round(mean_absolute_error,4))
+    #print('MSE: ', round(mse,4))
+    #print('RMSE: ', round(np.sqrt(mse),4))
 
 def main (args):
     metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics = initialization(args)
@@ -38,25 +54,29 @@ def main (args):
             if os.path.isfile(f): # checking if it is a file
                 generated_data_sample = np.loadtxt(f, delimiter=",")
                 #generated_data_sample[:, [1, 0]] = generated_data_sample[:, [0, 1]] #timestamp como primera columna
+                computed_metric = 0
                 if metric == 'mmd': #mayor valor más distintas son
-                    mmd = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
-                    metrics_results[metric].append(mmd)
+                    computed_metric = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
                 if metric == 'dtw': #mayor valor más distintas son
-                    dtw = dtw_ndim.distance(generated_data_sample, ori_data_sample)
-                    metrics_results[metric].append(dtw)
+                    computed_metric = dtw_ndim.distance(generated_data_sample, ori_data_sample)
                 if metric == 'kl': #mayor valor peor
-                    kl = KLdivergence(ori_data, generated_data_sample)
-                    metrics_results[metric].append(kl)
+                    computed_metric = KLdivergence(ori_data, generated_data_sample)
                 if metric == 'cc': #mayor valor peor. covarianza
-                    cc = compute_cc(generated_data_sample, ori_data_sample)
-                    metrics_results[metric].append(cc)
+                    computed_metric = compute_cc(generated_data_sample, ori_data_sample)
                 if metric == 'cp': #mayor valor peor. coeficiente de pearson
-                    cc = compute_cp(generated_data_sample, ori_data_sample)
-                    metrics_results[metric].append(cc)
+                    computed_metric = compute_cp(generated_data_sample, ori_data_sample)
                 if metric == 'hi':  # mayor valor peor
-                    hi = compute_hi(generated_data_sample, ori_data_sample)
-                    metrics_results[metric].append(hi)
+                    computed_metric = compute_hi(generated_data_sample, ori_data_sample)
+                if metric =='mae':
+                    computed_metric = compute_mae(generated_data_sample, ori_data_sample)
+                if metric == 'r2':
+                    computed_metric = compute_r2(generated_data_sample, ori_data_sample)
+                if metric =='ev':
+                    computed_metric = compute_ev(generated_data_sample, ori_data_sample)
+                if metric =='mi':
+                    computed_metric = compute_mi(generated_data_sample, ori_data_sample)
 
+                metrics_results[metric].append(computed_metric)
 
     for metric, results in metrics_results.items():
         if metric != 'tsne' or metric != 'pca':
@@ -104,6 +124,29 @@ def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_exper
     print("Metrics saved in file", f.name)
 
 
+def compute_mae(generated_data_sample, ori_data_sample):
+    return metrics.mean_absolute_error(ori_data_sample, generated_data_sample)
+
+def compute_r2(generated_data_sample, ori_data_sample):
+    return metrics.r2_score(ori_data_sample, generated_data_sample)
+
+def compute_ev(generated_data_sample, ori_data_sample):
+    return metrics.explained_variance_score(ori_data_sample, generated_data_sample)
+
+def compute_mi(generated_data_sample, ori_data_sample):
+    #return pyinform.mutual_info(ori_data_sample[:,1],generated_data_sample[:,1])
+    mi_columns = []
+    for column in range(1,3):
+        #print (column)
+        ori_data_column_values = ori_data_sample[:,column]
+        #print ("ori_data_column_values", ori_data_column_values)
+        generated_data_column_values = generated_data_sample[:, column]
+        #print("generated_data_column_values", generated_data_column_values)
+        mi_result = pyinform.mutual_info(ori_data_column_values,generated_data_column_values)
+        mi_columns.append(mi_result)
+
+    return np.mean(mi_columns)
+
 def compute_cp(generated_data_sample, ori_data_sample):
     normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
     normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
@@ -126,16 +169,11 @@ def compute_hi(generated_data_sample, ori_data):
     normalized_ori_data_sample = normalize_start_time_to_zero(ori_data)
     normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
     histogram_diff_matrix=[]
-    #print ("generated_data_sample",generated_data_sample)
     for column in range(0,normalized_ori_data_sample.shape[1]):
        ori_data_column_values = normalized_ori_data_sample[:,column]
        ori_histogram,ori_bin_edges = np.histogram(ori_data_column_values)
-       #print("ori_histogram", ori_histogram)
-       #print("ori_bin_edges", ori_bin_edges)
        generated_data_column_values = normalized_generated_data_sample[:, column]
        generated_histogram, generated_bin_edges = np.histogram(generated_data_column_values)
-       #print("generated_histogram", generated_histogram)
-       #print("generated_bin_edges", generated_bin_edges)
        column_histogram_diff = ori_histogram - generated_histogram
        histogram_diff_matrix.append(column_histogram_diff)
     histogram_diff_matrix = np.asmatrix(histogram_diff_matrix)
