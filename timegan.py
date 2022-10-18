@@ -262,15 +262,15 @@ def timegan (ori_data, parameters, experiment_root_directory_name
   # 1. Embedding network training
   print('Start Embedding Network Training')
   start = time.time()
-  for itt in range(iterations):
+  for itt in range(iterations+1):
     # Set mini-batch
     X_mb, T_mb = batch_generator(ori_data, ori_time, batch_size)           
     # Train embedder        
     _, step_e_loss = sess.run([E0_solver, E_loss_T0], feed_dict={X: X_mb, T: T_mb})
     # Checkpoint
-    if itt % 1000 == 0:
+    if itt % 100 == 0:
       end = time.time()
-      eta_secs = (end-start)*(iterations-itt)/1000
+      eta_secs = (end-start)*(iterations-itt)/100
       now = datetime.now()
       eta_datetime = now + timedelta(seconds=eta_secs)
       print('step: '+ str(itt) + '/' + str(iterations) + ', e_loss: ' + str(np.round(np.sqrt(step_e_loss),4)))
@@ -284,7 +284,7 @@ def timegan (ori_data, parameters, experiment_root_directory_name
   print('Start Training with Supervised Loss Only')
 
   start = time.time()
-  for itt in range(iterations):
+  for itt in range(iterations+1):
     # Set mini-batch
     X_mb, T_mb = batch_generator(ori_data, ori_time, batch_size)    
     # Random vector generation   
@@ -292,9 +292,9 @@ def timegan (ori_data, parameters, experiment_root_directory_name
     # Train generator
     _, step_g_loss_s = sess.run([GS_solver, G_loss_S], feed_dict={Z: Z_mb, X: X_mb, T: T_mb})       
     # Checkpoint
-    if itt % 1000 == 0:
+    if itt % 100 == 0:
       end = time.time()
-      eta_secs = (end - start) * (iterations - itt) / 1000
+      eta_secs = (end - start) * (iterations - itt) / 100
       now = datetime.now()
       eta_datetime = now + timedelta(seconds=eta_secs)
       print('step: '+ str(itt)  + '/' + str(iterations) +', s_loss: ' + str(np.round(np.sqrt(step_g_loss_s),4)))
@@ -308,7 +308,7 @@ def timegan (ori_data, parameters, experiment_root_directory_name
   # 3. Joint Training
   print('Start Joint Training')
   start = time.time()
-  for itt in range(iterations):
+  for itt in range(iterations+1):
     # Generator training (twice more than discriminator training)
     for kk in range(2):
       # Set mini-batch
@@ -332,9 +332,9 @@ def timegan (ori_data, parameters, experiment_root_directory_name
       _, step_d_loss = sess.run([D_solver, D_loss], feed_dict={X: X_mb, T: T_mb, Z: Z_mb})
         
     # Print multiple checkpoints
-    if itt % 1000 == 0:
+    if itt % 100 == 0:
       end = time.time()
-      eta_secs = (end - start) * (iterations - itt) / 1000
+      eta_secs = (end - start) * (iterations - itt) / 100
       now = datetime.now()
       eta_datetime = now + timedelta(seconds=eta_secs)
       print('step: '+ str(itt) + '/' + str(iterations) + 
