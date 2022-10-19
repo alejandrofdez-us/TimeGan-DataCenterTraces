@@ -5,11 +5,11 @@ import datetime
 #start_date = datetime.datetime(2022, 1, 1)
 
 
-df = pd.read_csv('data/machine_usage_cut_days_3-4-5-6.csv')
-#df = df.drop(df.columns[[0,4,5]], axis=1) #drop machine_id and empty columns
+df = pd.read_csv('data/machine_usage/machine_usage_day_7.csv')
+df = df.drop(df.columns[[0,4,5]], axis=1) #drop machine_id and empty columns
 df = df.groupby(df.columns[0]).mean()
-df = df.drop(df.columns[0], axis=1) # falla!!
-df.to_csv('data/machine_usage_grouped_days_3-4-5-6.csv')
+df = df.drop(df.columns[0], axis=1)
+df.to_csv('data/machine_usage/machine_usage_day_7_grouped.csv')
 #
 # for day in range (0,9):
 #     print ("Procesando día", day)
