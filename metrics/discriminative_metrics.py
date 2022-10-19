@@ -24,7 +24,7 @@ from sklearn.metrics import accuracy_score
 from utils import train_test_divide, extract_time, batch_generator
 
 
-def discriminative_score_metrics (ori_data, generated_data):
+def discriminative_score_metrics (ori_data, generated_data, internal_iterations=2000):
   """Use post-hoc RNN to classify original data and synthetic data
   
   Args:
@@ -48,7 +48,7 @@ def discriminative_score_metrics (ori_data, generated_data):
   ## Build a post-hoc RNN discriminator network
   # Network parameters
   hidden_dim = int(dim/2)
-  iterations = 2000
+  iterations = internal_iterations
   batch_size = 128
     
   # Input place holders

@@ -105,7 +105,7 @@ def main (args, experiment_root_directory_name):
   for _ in range(args.metric_iteration):
     print("Iteracion", i, "de", args.metric_iteration,"de discriminative score")
     i += 1
-    temp_disc = discriminative_score_metrics(ori_data, generated_data)
+    temp_disc = discriminative_score_metrics(ori_data, generated_data, args.internal_discriminative_iteration)
     discriminative_score.append(temp_disc)
       
   metric_results['discriminative'] = np.mean(discriminative_score)
@@ -116,8 +116,8 @@ def main (args, experiment_root_directory_name):
   for tt in range(args.metric_iteration):
     print("Iteracion",i, "de", args.metric_iteration,"de predictive score")
     i+=1
-    temp_pred = predictive_score_metrics(ori_data, generated_data)
-    predictive_score.append(temp_pred)   
+    temp_pred = predictive_score_metrics(ori_data, generated_data, args.internal_predictive_iteration)
+    predictive_score.append(temp_pred)
 
   print("Finalizando scores de prediccion")
   metric_results['predictive'] = np.mean(predictive_score)
@@ -180,6 +180,16 @@ if __name__ == '__main__':
       '--n_samples',
       help='number of samples to be generated',
       default=150,
+      type=int)
+  parser.add_argument(
+      '--internal_discriminative_iteration',
+      help='internal iterations of discriminative scoring',
+      default=2000,
+      type=int)
+  parser.add_argument(
+      '--internal_predictive_iteration',
+      help='internal iterations of predictive scoring',
+      default=5000,
       type=int)
   
   args = parser.parse_args()

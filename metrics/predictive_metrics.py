@@ -22,7 +22,7 @@ from sklearn.metrics import mean_absolute_error
 from utils import extract_time
 
  
-def predictive_score_metrics (ori_data, generated_data):
+def predictive_score_metrics (ori_data, generated_data, internal_iterations=5000):
   """Report the performance of Post-hoc RNN one-step ahead prediction.
   
   Args:
@@ -46,7 +46,7 @@ def predictive_score_metrics (ori_data, generated_data):
   ## Builde a post-hoc RNN predictive network 
   # Network parameters
   hidden_dim = int(dim/2)
-  iterations = 5000
+  iterations = internal_iterations
   batch_size = 128
     
   # Input place holders
