@@ -23,13 +23,6 @@ data_loading.py
 ## Necessary Packages
 import numpy as np
 
-def fullprint(*args, **kwargs):
-  from pprint import pprint
-  import numpy
-  opt = numpy.get_printoptions()
-  numpy.set_printoptions(threshold=numpy.inf)
-  pprint(*args, **kwargs)
-  numpy.set_printoptions(**opt)
 
 def MinMaxScaler(data):
   """Min Max normalizer.
@@ -149,12 +142,9 @@ def real_data_loading (data_name, seq_len):
     ori_data = np.loadtxt('data/batch_task_day3_preprocessed.csv', delimiter=",", skiprows=1)
 
 
-  #print("Empieza flip")
-  #fullprint(ori_data)
+  # print("Empieza flip")
   # Flip the data to make chronological data
   # ori_data = ori_data[::-1]
-  # print("Datos después de flip:")
-  #fullprint(ori_data)
   # Normalize the data
   # ori_data, min, max = MinMaxScaler(ori_data)
 
@@ -166,12 +156,10 @@ def real_data_loading (data_name, seq_len):
     _x = ori_data[i:i + seq_len]
     temp_data.append(_x)
     #print("corte #:", i)
-    #fullprint(_x)
-        
+
   # Mix the datasets (to make it similar to i.i.d)
   idx = np.random.permutation(len(temp_data))
   #print("índex idx:")
-  #fullprint (idx)
   data = []
   for i in range(len(temp_data)):
     data.append(temp_data[idx[i]])

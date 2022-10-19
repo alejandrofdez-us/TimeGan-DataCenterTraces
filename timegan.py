@@ -85,9 +85,6 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
   # Normalization
   ori_data, min_val, max_val = MinMaxScaler(ori_data)
 
-  # print("Datos después de normalización:")
-  # fullprint(ori_data)
-
   ## Build a RNN networks
   
   # Network Parameters

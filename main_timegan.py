@@ -43,13 +43,6 @@ from metrics.discriminative_metrics import discriminative_score_metrics
 from metrics.predictive_metrics import predictive_score_metrics
 from metrics.visualization_metrics import visualization
 
-def fullprint(*args, **kwargs):
-  from pprint import pprint
-  import numpy
-  opt = numpy.get_printoptions()
-  numpy.set_printoptions(threshold=numpy.inf)
-  pprint(*args, **kwargs)
-  numpy.set_printoptions(**opt)
 
 def main (args, experiment_root_directory_name):
   """Main function for timeGAN experiments.
@@ -201,7 +194,7 @@ if __name__ == '__main__':
   ori_data, generated_data, metrics = main(args, experiment_root_directory_name)
 
   print("Metrics")
-  fullprint(metrics)
+  print(metrics)
 
   generated_data_np_array = np.asarray(generated_data)
   i=0
