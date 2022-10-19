@@ -32,17 +32,7 @@ from datetime import datetime, timedelta
 import numpy as np
 from utils import extract_time, rnn_cell, random_generator, batch_generator, random_generator_alt
 
-
-def fullprint(*args, **kwargs):
-  from pprint import pprint
-  import numpy
-  opt = numpy.get_printoptions()
-  numpy.set_printoptions(threshold=numpy.inf)
-  pprint(*args, **kwargs)
-  numpy.set_printoptions(**opt)
-
-def timegan (ori_data, parameters, experiment_root_directory_name
-):
+def timegan (ori_data, parameters, experiment_root_directory_name):
   """TimeGAN function.
   
   Use original data as training set to generater synthetic data (time-series)
