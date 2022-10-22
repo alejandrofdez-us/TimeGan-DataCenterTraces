@@ -61,7 +61,7 @@ def main (args):
                     computed_metric = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
                 if metric == 'dtw': #mayor valor más distintas son
                     print("Computando para el fichero número:",n_files_iterations)
-                    computed_metric = dtw_ndim.distance(generated_data_sample, ori_data_sample)
+                    computed_metric = dtw_ndim.distance_fast(generated_data_sample, ori_data_sample)
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
                 if metric == 'cc': #mayor valor peor. covarianza
