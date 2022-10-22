@@ -49,6 +49,7 @@ def main (args):
     for metric in metrics_list:
         print ('Computando: ', metric)
         metrics_results[metric] = []
+        n_files_iterations = 0
         for filename in os.listdir(args.generated_data_dir):
             ori_data_sample = get_ori_data_sample(args, ori_data)
             f = os.path.join(args.generated_data_dir, filename)
@@ -80,6 +81,7 @@ def main (args):
                     create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/'+str(n_files_iterations)+'-')
 
                 metrics_results[metric].append(computed_metric)
+                n_files_iterations += 1
 
     for metric, results in metrics_results.items():
         if metric != 'tsne' or metric != 'pca' or metric !='evolution_figures':
