@@ -64,12 +64,12 @@ def main (args):
                     computed_metric = dtw_ndim.distance(generated_data_sample, ori_data_sample)
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
-                if metric == 'cc': #mayor valor peor. covarianza
-                    computed_metric = compute_cc(generated_data_sample, ori_data_sample)
-                if metric == 'cp': #mayor valor peor. coeficiente de pearson
-                    computed_metric = compute_cp(generated_data_sample, ori_data_sample)
-                if metric == 'hi':  # mayor valor peor
-                    computed_metric = compute_hi(generated_data_sample, ori_data_sample)
+                # if metric == 'cc': #mayor valor peor. covarianza
+                #     computed_metric = compute_cc(generated_data_sample, ori_data_sample)
+                # if metric == 'cp': #mayor valor peor. coeficiente de pearson
+                #     computed_metric = compute_cp(generated_data_sample, ori_data_sample)
+                # if metric == 'hi':  # mayor valor peor
+                #     computed_metric = compute_hi(generated_data_sample, ori_data_sample)
                 if metric =='mae':
                     computed_metric = compute_mae(generated_data_sample, ori_data_sample)
                 if metric == 'r2':
