@@ -64,12 +64,12 @@ def main (args):
                     computed_metric = dtw_ndim.distance(generated_data_sample, ori_data_sample)
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
-                # if metric == 'cc': #mayor valor peor. covarianza
-                #     computed_metric = compute_cc(generated_data_sample, ori_data_sample)
-                # if metric == 'cp': #mayor valor peor. coeficiente de pearson
-                #     computed_metric = compute_cp(generated_data_sample, ori_data_sample)
-                # if metric == 'hi':  # mayor valor peor
-                #     computed_metric = compute_hi(generated_data_sample, ori_data_sample)
+                if metric == 'cc': #mayor valor peor. covarianza
+                    computed_metric = compute_cc(generated_data_sample, ori_data_sample)
+                if metric == 'cp': #mayor valor peor. coeficiente de pearson
+                    computed_metric = compute_cp(generated_data_sample, ori_data_sample)
+                if metric == 'hi':  # mayor valor peor
+                    computed_metric = compute_hi(generated_data_sample, ori_data_sample)
                 if metric =='mae':
                     computed_metric = compute_mae(generated_data_sample, ori_data_sample)
                 if metric == 'r2':
@@ -156,31 +156,31 @@ def compute_mi(generated_data_sample, ori_data_sample):
     return np.mean(mi_columns)
 
 def compute_cp(generated_data_sample, ori_data_sample):
-    normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
-    normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
-    ori_data_sample_pearson = np.corrcoef(normalized_ori_data_sample[:normalized_generated_data_sample.shape[0]])
-    generated_data_sample_pearson = np.corrcoef(normalized_generated_data_sample)
+    #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
+    #normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
+    ori_data_sample_pearson = np.corrcoef(ori_data_sample[:ori_data_sample.shape[0]])
+    generated_data_sample_pearson = np.corrcoef(generated_data_sample)
     correlation_diff_matrix = ori_data_sample_pearson - generated_data_sample_pearson
     l1_norms_avg = np.mean([np.linalg.norm(row) for row in correlation_diff_matrix])
     return l1_norms_avg
 
 def compute_cc(generated_data_sample, ori_data_sample):
-    normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
-    normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
-    ori_data_sample_covariance = np.cov(normalized_ori_data_sample[:normalized_generated_data_sample.shape[0]])
-    generated_data_covariance = np.cov(normalized_generated_data_sample)
+    #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
+    #normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
+    ori_data_sample_covariance = np.cov(ori_data_sample[:ori_data_sample.shape[0]])
+    generated_data_covariance = np.cov(generated_data_sample)
     covariance_diff_matrix = ori_data_sample_covariance - generated_data_covariance
     l1_norms_avg = np.mean([np.linalg.norm(row) for row in covariance_diff_matrix])
     return l1_norms_avg
 
 def compute_hi(generated_data_sample, ori_data):
-    normalized_ori_data_sample = normalize_start_time_to_zero(ori_data)
-    normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
+    #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data)
+    #normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
     histogram_diff_matrix=[]
-    for column in range(0,normalized_ori_data_sample.shape[1]):
-       ori_data_column_values = normalized_ori_data_sample[:,column]
+    for column in range(0,ori_data.shape[1]):
+       ori_data_column_values = ori_data[:,column]
        ori_histogram,ori_bin_edges = np.histogram(ori_data_column_values)
-       generated_data_column_values = normalized_generated_data_sample[:, column]
+       generated_data_column_values = generated_data_sample[:, column]
        generated_histogram, generated_bin_edges = np.histogram(generated_data_column_values)
        column_histogram_diff = ori_histogram - generated_histogram
        histogram_diff_matrix.append(column_histogram_diff)
