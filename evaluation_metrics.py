@@ -9,6 +9,7 @@ import pandas as pd
 import scipy
 import pyinform
 
+from evolution_figures import create_usage_evolution
 from metrics.kl import KLdivergence
 from metrics.mmd import mmd_rbf
 from dtaidistance import dtw_ndim
@@ -36,7 +37,7 @@ def regression_results(y_true, y_pred):
 def main (args):
     metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics = initialization(args)
 
-    ori_data = np.loadtxt(args.ori_data_filename, delimiter=",", skiprows=1)
+    ori_data = np.loadtxt(args.ori_data_filename, delimiter=",", skiprows=0)
     #ori_data[:, [1, 0]] = ori_data[:, [0, 1]] # timestamp como primera columna
     if "tsne" in metrics_list or "pca" in metrics_list:
         generate_visualization_figures(args, path_to_save_metrics, metrics_list, ori_data)
@@ -48,6 +49,7 @@ def main (args):
     for metric in metrics_list:
         print ('Computando: ', metric)
         metrics_results[metric] = []
+        n_files_iterations = 0
         for filename in os.listdir(args.generated_data_dir):
             ori_data_sample = get_ori_data_sample(args, ori_data)
             f = os.path.join(args.generated_data_dir, filename)
@@ -58,6 +60,7 @@ def main (args):
                 if metric == 'mmd': #mayor valor más distintas son
                     computed_metric = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
                 if metric == 'dtw': #mayor valor más distintas son
+                    print("Computando para el fichero número:",n_files_iterations)
                     computed_metric = dtw_ndim.distance(generated_data_sample, ori_data_sample)
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
@@ -75,11 +78,14 @@ def main (args):
                     computed_metric = compute_ev(generated_data_sample, ori_data_sample)
                 if metric =='mi':
                     computed_metric = compute_mi(generated_data_sample, ori_data_sample)
+                if metric == 'evolution_figures':
+                    create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/'+str(n_files_iterations)+'-')
 
                 metrics_results[metric].append(computed_metric)
+                n_files_iterations += 1
 
     for metric, results in metrics_results.items():
-        if metric != 'tsne' or metric != 'pca':
+        if metric != 'tsne' or metric != 'pca' or metric !='evolution_figures':
             avg_results[metric] = statistics.mean(metrics_results[metric])
 
     save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics)
@@ -93,6 +99,8 @@ def initialization(args):
     saved_metrics = f.readline()
     args.seq_len = int(re.search("\Wseq_len=([^,}]+)\)", saved_experiments_parameters).group(1))
     os.makedirs(path_to_save_metrics, exist_ok=True)
+    os.makedirs(path_to_save_metrics+'figures/', exist_ok=True)
+
     metrics_list = [metric for metric in args.metrics.split(',')]
     return metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics
 
