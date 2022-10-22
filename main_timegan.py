@@ -187,7 +187,7 @@ if __name__ == '__main__':
   
   args = parser.parse_args()
 
-  experiment_root_directory_name = "experiments/"  + args.data_name + '_' + args.iteration + '-' + datetime.now().strftime(
+  experiment_root_directory_name = "experiments/"  + args.data_name + '_' + str(args.iteration) + '-' + datetime.now().strftime(
       "%j-%Y-%H-%M")+"/"
 
   # Calls main function
