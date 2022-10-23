@@ -55,7 +55,6 @@ def main (args):
             f = os.path.join(args.generated_data_dir, filename)
             if os.path.isfile(f): # checking if it is a file
                 generated_data_sample = np.loadtxt(f, delimiter=",")
-                #generated_data_sample[:, [1, 0]] = generated_data_sample[:, [0, 1]] #timestamp como primera columna
                 computed_metric = 0
                 if metric == 'mmd': #mayor valor más distintas son
                     computed_metric = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
@@ -79,12 +78,13 @@ def main (args):
                     computed_metric = compute_mi(generated_data_sample, ori_data_sample)
                 if metric == 'evolution_figures':
                     create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/'+str(n_files_iterations)+'-')
+                if metric != 'evolution_figures':
+                    metrics_results[metric].append(computed_metric)
 
-                metrics_results[metric].append(computed_metric)
                 n_files_iterations += 1
 
     for metric, results in metrics_results.items():
-        if metric != 'tsne' or metric != 'pca' or metric !='evolution_figures':
+        if metric != 'tsne' or metric != 'pca' or metric != 'evolution_figures':
             avg_results[metric] = statistics.mean(metrics_results[metric])
 
     save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics)
