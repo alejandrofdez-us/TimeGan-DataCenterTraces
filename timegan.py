@@ -249,7 +249,7 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
   # 1. Embedding network training
   print('Start Embedding Network Training')
   start = time.time()
-  for itt in range(iterations+1):
+  for itt in range(iterations):
     # Set mini-batch
     X_mb, T_mb = batch_generator(ori_data, ori_time, batch_size)           
     # Train embedder        
@@ -260,18 +260,18 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
       eta_secs = (end-start)*(iterations-itt)/100
       now = datetime.now()
       eta_datetime = now + timedelta(seconds=eta_secs)
-      print('step: '+ str(itt) + '/' + str(iterations) + ', e_loss: ' + str(np.round(np.sqrt(step_e_loss),4)))
+      print('step: '+ str(itt) + '/' + str(iterations) + ', e_loss: ' + str(np.round(np.sqrt(step_e_loss), 4)))
       if itt!=0:
-        print('\tElapsed time: ' , round(end - start,1), " sgs." , "ETA: ", round(eta_secs/60,1), " mins.",  eta_datetime)
+        print('\tElapsed time: ', round(end - start, 1), " sgs.", "ETA:", round(eta_secs/60,1), "mins.", eta_datetime)
       start=time.time()
       
-  print('Finish Embedding Network Training')
+  print('Finish Embedding Network Training. step: ' + str(itt) + '/' + str(iterations) + ', Final e_loss: ' + str(np.round(np.sqrt(step_e_loss), 4)))
     
   # 2. Training only with supervised loss
   print('Start Training with Supervised Loss Only')
 
   start = time.time()
-  for itt in range(iterations+1):
+  for itt in range(iterations):
     # Set mini-batch
     X_mb, T_mb = batch_generator(ori_data, ori_time, batch_size)    
     # Random vector generation   
@@ -290,12 +290,13 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
       start=time.time()
 
       
-  print('Finish Training with Supervised Loss Only')
+  print('Finish Training with Supervised Loss Only. step: ' + str(itt) + '/' + str(iterations) + ', Final s_loss: ' + str(np.round(np.sqrt(step_g_loss_s), 4)))
+
     
   # 3. Joint Training
   print('Start Joint Training')
   start = time.time()
-  for itt in range(iterations+1):
+  for itt in range(iterations):
     # Generator training (twice more than discriminator training)
     for kk in range(2):
       # Set mini-batch
@@ -325,7 +326,7 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
       now = datetime.now()
       eta_datetime = now + timedelta(seconds=eta_secs)
       print('step: '+ str(itt) + '/' + str(iterations) + 
-            ', d_loss: ' + str(np.round(step_d_loss,4)) + 
+            ', d_loss: ' + str(np.round(step_d_loss,4)) +
             ', g_loss_u: ' + str(np.round(step_g_loss_u,4)) + 
             ', g_loss_s: ' + str(np.round(np.sqrt(step_g_loss_s),4)) +
             ', g_loss_v: ' + str(np.round(step_g_loss_v,4)) + 
@@ -336,28 +337,32 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
       start=time.time()
 
 
-  print('Finish Joint Training')
+  print('Finish Joint Training. step: '+ str(itt) + '/' + str(iterations) +
+            ', Final d_loss: ' + str(np.round(step_d_loss,4)) +
+            ', g_loss_u: ' + str(np.round(step_g_loss_u,4)) +
+            ', g_loss_s: ' + str(np.round(np.sqrt(step_g_loss_s),4)) +
+            ', g_loss_v: ' + str(np.round(step_g_loss_v,4)) +
+            ', e_loss_t0: ' + str(np.round(np.sqrt(step_e_loss_t0),4)))
     
 
   ## Synthetic data generation
   # Generation Parameters
   n_samples = parameters['n_samples']
-  print('Comienza generación sintética')
-  print('Random generator')
-
-  #generated_seq_length = 1000
-  #my_ori_time = [generated_seq_length,generated_seq_length]
+  print('Start synthetic generation')
+  print('\tStart Random generator')
   Z_mb = random_generator_alt(n_samples, z_dim, ori_time, max_seq_len)
-  print('Finaliza Random generator')
+  print('\nRandom generator finished')
+  print('Start generation of ', str(n_samples),' samples.')
   generated_data_curr = sess.run(X_hat, feed_dict={Z: Z_mb, X: ori_data, T: ori_time[:n_samples]})
 
-  print('Finaliza generación sintética')
+  print('Finished synthetic generation')
 
   inputs = {"myinput_x": X, "myinput_z": Z, "myinput_t":T}
   outputs = {"x_hat": X_hat}
 
+  print('Saving model')
   tf.saved_model.simple_save(sess, experiment_root_directory_name+'/models/', inputs, outputs)
-
+  print('Model saved at '+experiment_root_directory_name+'/models/')
 
   generated_data = list()
 
