@@ -34,6 +34,9 @@ def regression_results(y_true, y_pred):
     #print('MSE: ', round(mse,4))
     #print('RMSE: ', round(np.sqrt(mse),4))
 
+
+
+
 def main (args):
     metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics = initialization(args)
 
@@ -59,7 +62,7 @@ def main (args):
                 if metric == 'mmd': #mayor valor más distintas son
                     computed_metric = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
                 if metric == 'dtw': #mayor valor más distintas son
-                    computed_metric = dtw_ndim.distance_fast(generated_data_sample, ori_data_sample)
+                    computed_metric = compute_dtw(generated_data_sample, ori_data_sample)
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
                 if metric == 'cc': #mayor valor peor. covarianza
@@ -130,6 +133,15 @@ def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_exper
         f.write(repr(metrics_results))
     print("Metrics saved in file", f.name)
 
+
+def compute_dtw(generated_data_sample, ori_data_sample):
+    sample_lenght = len(generated_data_sample)
+    processed_generated_data_sample = np.insert(generated_data_sample, 0, np.ones(sample_lenght, dtype=int), axis=1)
+    processed_generated_data_sample = np.insert(processed_generated_data_sample, 0, range(sample_lenght), axis=1)
+    processed_ori_data_sample = np.insert(ori_data_sample, 0, np.ones(sample_lenght, dtype=int), axis=1)
+    processed_ori_data_sample = np.insert(processed_ori_data_sample, 0, range(sample_lenght), axis=1)
+
+    return dtw_ndim.distance_fast(processed_generated_data_sample, processed_ori_data_sample)
 
 def compute_mae(generated_data_sample, ori_data_sample):
     return metrics.mean_absolute_error(ori_data_sample, generated_data_sample)
