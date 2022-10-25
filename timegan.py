@@ -196,7 +196,7 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
 
   # Discriminator
   Y_fake = discriminator(H_hat, T)
-  Y_real = discriminator(H, T)     
+  Y_real = discriminator(H, T)
   Y_fake_e = discriminator(E_hat, T)
     
   # Variables        
@@ -221,8 +221,8 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
   G_loss_S = tf.losses.mean_squared_error(H[:,1:,:], H_hat_supervise[:,:-1,:])
     
   # 3. Two Momments
-  G_loss_V1 = tf.reduce_mean(tf.abs(tf.sqrt(tf.nn.moments(X_hat,[0])[1] + 1e-6) - tf.sqrt(tf.nn.moments(X,[0])[1] + 1e-6)))
-  G_loss_V2 = tf.reduce_mean(tf.abs((tf.nn.moments(X_hat,[0])[0]) - (tf.nn.moments(X,[0])[0])))
+  G_loss_V1 = tf.reduce_mean(tf.abs(tf.sqrt(tf.nn.moments(X_hat,[0])[1] + 1e-6) - tf.sqrt(tf.nn.moments(X,[0])[1] + 1e-6))) #diferencia de varianzas
+  G_loss_V2 = tf.reduce_mean(tf.abs((tf.nn.moments(X_hat, [0])[0]) - (tf.nn.moments(X, [0])[0]))) #diferencia de medias
     
   G_loss_V = G_loss_V1 + G_loss_V2
     
@@ -232,7 +232,7 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
   # Embedder network loss
   E_loss_T0 = tf.losses.mean_squared_error(X, X_tilde)
   E_loss0 = 10*tf.sqrt(E_loss_T0)
-  E_loss = E_loss0  + 0.1*G_loss_S
+  E_loss = E_loss0 + 0.1*G_loss_S
     
   # optimizer
   E0_solver = tf.train.AdamOptimizer().minimize(E_loss0, var_list = e_vars + r_vars)
@@ -246,7 +246,7 @@ def timegan (ori_data, parameters, experiment_root_directory_name):
   print('Comienza entrenamiento')
   sess.run(tf.global_variables_initializer())
 
-  # 1. Embedding network training
+  # 1. Embedding network training H->espacio de características latente
   print('Start Embedding Network Training')
   start = time.time()
   for itt in range(iterations):
