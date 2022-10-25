@@ -18,7 +18,7 @@ def create_figure(ori_column_values_array, generated_column_values,axis, name, p
         plt.plot(ori_column_values, c=next(cycol), label="Original_"+str(i), linewidth=1)
         i += 1
 
-    plt.plot(generated_column_values, c="blue", label="Synthetic", linewidth=1)
+    plt.plot(generated_column_values, c="blue", label="Synthetic", linewidth=2)
     if axis:
         plt.axis(axis)
     else:
@@ -74,8 +74,9 @@ def generate_figures_grouped_by_minutes_various_ori_samples (minutes, column_num
 
     delta_gen_column = compute_grouped_delta_from_sample(column_number, minutes, generated_data_sample, seq_len)
 
-
-    create_figure(ori_column_values_array=delta_ori_column_array, generated_column_values=delta_gen_column, axis=[0,seq_len//(minutes * 6),-5,5],
+    max_y_value = max(np.amax(delta_ori_column_array), np.amax(delta_gen_column))
+    min_y_value = min(np.amin(delta_ori_column_array), np.amin(delta_gen_column))
+    create_figure(ori_column_values_array=delta_ori_column_array, generated_column_values=delta_gen_column, axis=[0,seq_len//(minutes * 6),min_y_value,max_y_value],
                       name=column_name + '_grouped_usage_delta_'+str(minutes)+'min', path_to_save_metrics=path_to_save_metrics)
 
 
