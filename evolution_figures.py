@@ -45,27 +45,11 @@ def create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, pat
 
 def generate_figures_by_column(column_number, column_name, generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, seq_len):
     create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=[0, seq_len, 0, 100], name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics)
-    delta_ori_column = -np.diff(ori_data_sample[:, column_number])
-    delta_gen_column = -np.diff(generated_data_sample[:, column_number])
-    create_figure(ori_column_values_array=[delta_ori_column], generated_column_values=delta_gen_column, axis=None, name=column_name+'_usage_delta_10secs', path_to_save_metrics=path_to_save_metrics)
+    generate_figures_grouped_by_minutes_various_ori_samples(1/6, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
     generate_figures_grouped_by_minutes_various_ori_samples(1, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
-    generate_figures_grouped_by_minutes_various_ori_samples(10,column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
+    generate_figures_grouped_by_minutes_various_ori_samples(10, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
     generate_figures_grouped_by_minutes_various_ori_samples(30, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
     generate_figures_grouped_by_minutes_various_ori_samples(60, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
-
-
-def generate_figures_grouped_by_minutes (minutes, column_number, column_name, generated_data_sample, ori_data_sample, path_to_save_metrics, seq_len):
-    ori_column = ori_data_sample[:, column_number]
-    gen_column = generated_data_sample[:, column_number]
-    ori_column_splitted = np.array_split(ori_column, seq_len//(minutes * 6))
-    gen_column_splitted = np.array_split(gen_column, seq_len//(minutes * 6))
-    ori_column_mean = [np.mean(batch) for batch in ori_column_splitted]
-    gen_column_mean = [np.mean(batch) for batch in gen_column_splitted]
-    delta_ori_column = -np.diff(ori_column_mean)
-    delta_gen_column = -np.diff(gen_column_mean)
-    create_figure(ori_column_values_array=[delta_ori_column], generated_column_values=delta_gen_column, axis=[0,seq_len//(minutes * 6),-5,5],
-                  name=column_name + '_grouped_usage_delta_'+str(minutes)+'min', path_to_save_metrics=path_to_save_metrics)
-
 
 def generate_figures_grouped_by_minutes_various_ori_samples (minutes, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, n_ori_samples=1):
 
