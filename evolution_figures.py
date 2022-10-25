@@ -9,8 +9,8 @@ from itertools import cycle
 
 
 def create_figure(ori_column_values_array, generated_column_values,axis, name, path_to_save_metrics):
-    f, ax = plt.subplots(1)
     plt.rcParams["figure.figsize"] = (18, 3)
+    f, ax = plt.subplots(1)
     i=1
     cycol = cycle('grcmk')
 
