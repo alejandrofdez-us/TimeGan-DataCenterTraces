@@ -1,4 +1,5 @@
 import argparse
+import os
 import random
 
 import matplotlib.pyplot as plt
@@ -31,25 +32,23 @@ def create_figure(ori_column_values_array, generated_column_values,axis, name, p
     plt.close()
 
 
-def create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics):
+def create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, n_file):
     seq_len = len(ori_data_sample[:,0])
+    column_names = ['cpu', 'mem', 'net_in', 'net_out']
+    for column_name in column_names:
+        index = column_names.index(column_name)
+        path_to_save_metrics_column = path_to_save_metrics+'/'+column_name+'/'
+        os.makedirs(path_to_save_metrics_column, exist_ok=True)
+        generate_figures_by_column(index, column_name, generated_data_sample,ori_data, ori_data_sample, path_to_save_metrics_column, n_file, seq_len)
 
-    cpu_usage_column = 0
-    generate_figures_by_column(cpu_usage_column, "cpu",generated_data_sample,ori_data, ori_data_sample, path_to_save_metrics, seq_len)
-
-    mem_usage_column = 1
-    generate_figures_by_column(mem_usage_column, "mem", generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, seq_len)
-
-    return
-
-
-def generate_figures_by_column(column_number, column_name, generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, seq_len):
-    create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=[0, seq_len, 0, 100], name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics)
-    generate_figures_grouped_by_minutes_various_ori_samples(1/6, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
-    generate_figures_grouped_by_minutes_various_ori_samples(1, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
-    generate_figures_grouped_by_minutes_various_ori_samples(10, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
-    generate_figures_grouped_by_minutes_various_ori_samples(30, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
-    generate_figures_grouped_by_minutes_various_ori_samples(60, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, 5)
+def generate_figures_by_column(column_number, column_name, generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, n_file, seq_len):
+    path_to_save_metrics_for_file_number = path_to_save_metrics+str(n_file)+'-'
+    create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=[0, seq_len, 0, 100], name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics_for_file_number)
+    generate_figures_grouped_by_minutes_various_ori_samples(1/6, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
+    generate_figures_grouped_by_minutes_various_ori_samples(1, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
+    generate_figures_grouped_by_minutes_various_ori_samples(10, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
+    generate_figures_grouped_by_minutes_various_ori_samples(30, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
+    generate_figures_grouped_by_minutes_various_ori_samples(60, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
 
 def generate_figures_grouped_by_minutes_various_ori_samples (minutes, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics, seq_len, n_ori_samples=1):
 

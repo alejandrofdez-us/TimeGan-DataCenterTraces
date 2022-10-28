@@ -80,7 +80,7 @@ def main (args):
                 if metric =='mi':
                     computed_metric = compute_mi(generated_data_sample, ori_data_sample)
                 if metric == 'evolution_figures':
-                    create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/'+str(n_files_iterations)+'-')
+                    create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/', n_files_iterations)
                 if metric != 'evolution_figures':
                     metrics_results[metric].append(computed_metric)
 
