@@ -65,7 +65,7 @@ def main (args, experiment_root_directory_name):
     - metric_results: discriminative and predictive scores
   """
   ## Data loading
-  if args.data_name in ['stock', 'energy','trivial','natural','machine_usage_grouped_days_3-4-5-6','machine_usage_complete_grouped','batchtaskday3','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped','alibabacompletogroupedhour', 'alibabacompletogroupednotimestamp']:
+  if args.data_name in ['stock', 'energy','trivial','natural','google_instance_week1','machine_usage_grouped_days_3-4-5-6','machine_usage_complete_grouped','batchtaskday3','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped','alibabacompletogroupedhour', 'alibabacompletogroupednotimestamp']:
     ori_data = real_data_loading(args.data_name, args.seq_len)
   elif args.data_name == 'sine':
     # Set number of samples and its dimensions
@@ -131,7 +131,7 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--data_name',
-      choices=['sine','stock','energy','trivial','natural','machine_usage_grouped_days_3-4-5-6','machine_usage_complete_grouped','batchtaskday3','alibaba100','alibaba500','alibaba1000', 'alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped', 'alibabacompletogroupedhour','alibabacompletogroupednotimestamp'],
+      choices=['sine','stock','energy','trivial','natural','google_instance_week1','machine_usage_grouped_days_3-4-5-6','machine_usage_complete_grouped','batchtaskday3','alibaba100','alibaba500','alibaba1000', 'alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped', 'alibabacompletogroupedhour','alibabacompletogroupednotimestamp'],
       default='stock',
       type=str)
   parser.add_argument(

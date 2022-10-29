@@ -93,8 +93,8 @@ def real_data_loading (data_name, seq_len):
   Returns:
     - data: preprocessed data.
   """
-  assert data_name in ['stock','energy','trivial','natural','machine_usage_grouped_days_3-4-5-6','machine_usage_complete_grouped','batchtaskday3','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped','alibabacompletogroupedhour','alibabacompletogroupednotimestamp']
-  print("Cargando datos: ", data_name)
+  assert data_name in ['stock','energy','trivial','natural','google_instance_week1','machine_usage_grouped_days_3-4-5-6','machine_usage_complete_grouped','batchtaskday3','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped','alibabacompletogroupedhour','alibabacompletogroupednotimestamp']
+  print("Loading dataset named: ", data_name)
   if data_name == 'stock':
     ori_data = np.loadtxt('data/stock_data.csv', delimiter = ",",skiprows = 1)
   elif data_name == 'energy':
@@ -136,8 +136,9 @@ def real_data_loading (data_name, seq_len):
     rows_to_be_loaded = 360*24*days_to_be_loaded
     ori_data = np.loadtxt('data/machine_usage/machine_usage.csv', delimiter=",", skiprows=rows_to_skip, max_rows=rows_to_be_loaded)
   elif data_name == 'machine_usage_grouped_days_3-4-5-6':
-    print("cargando")
     ori_data = np.loadtxt('data/machine_usage/machine_usage_grouped_days_3-4-5-6.csv', delimiter=",", skiprows=0)
+  elif data_name == 'google_instance_week1':
+    ori_data = np.loadtxt('data/trazas_google/week1/instance_usage_5min_sample_week1.csv', delimiter=",", skiprows=0)
   elif data_name == 'batchtaskday3':
     ori_data = np.loadtxt('data/batch_task_day3_preprocessed.csv', delimiter=",", skiprows=1)
 
