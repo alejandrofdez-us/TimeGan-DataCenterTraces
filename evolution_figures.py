@@ -47,7 +47,8 @@ def generate_figures_by_column(column_number, column_name, generated_data_sample
     if ("y_axis_min" in column_config and "y_axis_max" in column_config):
         axis = [0, seq_len, column_config['y_axis_min'], column_config['y_axis_max']]
     else:
-        axis = [0, seq_len, np.amin(ori_data_sample[:, column_number]), np.amax(ori_data_sample[:, column_number])]
+        #axis = [0, seq_len, min(np.amin(generated_data_sample[:, column_number]), np.amin(ori_data_sample[:, column_number])), max(np.amax(generated_data_sample[:, column_number]), np.amax(ori_data_sample[:, column_number]))]
+        axis = None
 
     create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=axis, name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics_for_file_number)
 
