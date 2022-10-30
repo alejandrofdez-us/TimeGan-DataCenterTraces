@@ -47,7 +47,6 @@ def generate_figures_by_column(column_number, column_name, generated_data_sample
     if ("y_axis_min" in column_config and "y_axis_max" in column_config):
         axis = [0, seq_len, column_config['y_axis_min'], column_config['y_axis_max']]
     else:
-        #axis = [0, seq_len, min(np.amin(generated_data_sample[:, column_number]), np.amin(ori_data_sample[:, column_number])), max(np.amax(generated_data_sample[:, column_number]), np.amax(ori_data_sample[:, column_number]))]
         axis = None
 
     create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=axis, name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics_for_file_number)
@@ -67,7 +66,7 @@ def generate_figures_grouped_by_minutes_various_ori_samples (minutes, column_num
     max_y_value = max(np.amax(delta_ori_column_array), np.amax(delta_gen_column))
     min_y_value = min(np.amin(delta_ori_column_array), np.amin(delta_gen_column))
     create_figure(ori_column_values_array=delta_ori_column_array, generated_column_values=delta_gen_column, axis=[0,seq_len//(minutes / (timestamp_frequency_secs/60)),min_y_value,max_y_value],
-                      name=column_name + '_grouped_usage_delta_'+str(round(minutes, 2))+'min', path_to_save_metrics=path_to_save_metrics)
+                      name=column_name + '_usage_delta_'+str(round(minutes, 2))+'min', path_to_save_metrics=path_to_save_metrics)
 
 
 def compute_grouped_delta_from_sample(column_number, minutes, data_sample, seq_len, timestamp_frequency_secs,):
