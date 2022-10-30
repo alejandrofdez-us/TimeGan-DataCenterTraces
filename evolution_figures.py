@@ -63,7 +63,7 @@ def generate_figures_grouped_by_minutes_various_ori_samples (minutes, column_num
 
     max_y_value = max(np.amax(delta_ori_column_array), np.amax(delta_gen_column))
     min_y_value = min(np.amin(delta_ori_column_array), np.amin(delta_gen_column))
-    create_figure(ori_column_values_array=delta_ori_column_array, generated_column_values=delta_gen_column, axis=[0,seq_len//(minutes * 6),min_y_value,max_y_value],
+    create_figure(ori_column_values_array=delta_ori_column_array, generated_column_values=delta_gen_column, axis=[0,seq_len//(minutes / (timestamp_frequency_secs/60)),min_y_value,max_y_value],
                       name=column_name + '_grouped_usage_delta_'+str(round(minutes, 2))+'min', path_to_save_metrics=path_to_save_metrics)
 
 
