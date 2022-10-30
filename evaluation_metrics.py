@@ -105,12 +105,12 @@ def initialization(args):
 
     metrics_list = [metric for metric in args.metrics.split(',')]
 
-    if (args.dataset == 'alibaba'):
+    if (args.trace == 'alibaba2018'):
         dataset_info = {
             "timestamp_frequency_secs": 10,
             "column_names": ["cpu", "mem", "net_in", "net_out"]
         }
-    elif (args.dataset == 'google'):
+    elif (args.trace == 'google2019'):
         dataset_info = {
             "timestamp_frequency_secs": 300,
             "column_names": ["cpu", "mem", "assigned_mem", "cycles_per_instruction"]
