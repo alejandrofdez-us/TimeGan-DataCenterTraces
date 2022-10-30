@@ -37,7 +37,7 @@ def create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, pat
     seq_len = len(ori_data_sample[:,0])
     column_configs = dataset_info['column_config'].items()
     for column_name, column_config in column_configs:
-        index = column_config['index']
+        index = column_config['column_index']
         path_to_save_metrics_column = path_to_save_metrics+'/'+column_name+'/'
         os.makedirs(path_to_save_metrics_column, exist_ok=True)
         generate_figures_by_column(index, column_name, generated_data_sample,ori_data, ori_data_sample, path_to_save_metrics_column, n_file, seq_len, dataset_info['timestamp_frequency_secs'], column_config)
