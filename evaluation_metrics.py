@@ -38,7 +38,7 @@ def regression_results(y_true, y_pred):
 
 
 def main (args):
-    metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics = initialization(args)
+    metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics, dataset_info = initialization(args)
 
     ori_data = np.loadtxt(args.ori_data_filename, delimiter=",", skiprows=0)
     #ori_data[:, [1, 0]] = ori_data[:, [0, 1]] # timestamp como primera columna
@@ -52,7 +52,7 @@ def main (args):
     for metric in metrics_list:
         print ('Computando: ', metric)
         metrics_results[metric] = []
-        n_files_iterations = 0
+        n_files_iteration = 0
         for filename in os.listdir(args.generated_data_dir):
             ori_data_sample = get_ori_data_sample(args, ori_data)
             f = os.path.join(args.generated_data_dir, filename)
@@ -80,11 +80,11 @@ def main (args):
                 if metric =='mi':
                     computed_metric = compute_mi(generated_data_sample, ori_data_sample)
                 if metric == 'evolution_figures':
-                    create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/', n_files_iterations)
+                    create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/', n_files_iteration, dataset_info)
                 if metric != 'evolution_figures':
                     metrics_results[metric].append(computed_metric)
 
-                n_files_iterations += 1
+                n_files_iteration += 1
 
     for metric, results in metrics_results.items():
         if metric != 'tsne' and metric != 'pca' and metric != 'evolution_figures':
@@ -104,7 +104,19 @@ def initialization(args):
     os.makedirs(path_to_save_metrics+'figures/', exist_ok=True)
 
     metrics_list = [metric for metric in args.metrics.split(',')]
-    return metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics
+
+    if (args.dataset == 'alibaba'):
+        dataset_info = {
+            "timestamp_frequency_secs": 10,
+            "column_names": ["cpu", "mem", "net_in", "net_out"]
+        }
+    elif (args.dataset == 'google'):
+        dataset_info = {
+            "timestamp_frequency_secs": 300,
+            "column_names": ["cpu", "mem", "assigned_mem", "cycles_per_instruction"]
+        }
+
+    return metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics, dataset_info
 
 
 def preprocess_dataset(ori_data, seq_len):
@@ -169,7 +181,7 @@ def compute_mi(generated_data_sample, ori_data_sample):
 def compute_cp(generated_data_sample, ori_data_sample):
     #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
     #normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
-    ori_data_sample_pearson = np.corrcoef(ori_data_sample[:ori_data_sample.shape[0]])
+    ori_data_sample_pearson = np.corrcoef(ori_data_sample[:ori_data_sample.shape[0]])  #FIXME: quitar el corte
     generated_data_sample_pearson = np.corrcoef(generated_data_sample)
     correlation_diff_matrix = ori_data_sample_pearson - generated_data_sample_pearson
     l1_norms_avg = np.mean([np.linalg.norm(row) for row in correlation_diff_matrix])
@@ -178,7 +190,7 @@ def compute_cp(generated_data_sample, ori_data_sample):
 def compute_cc(generated_data_sample, ori_data_sample):
     #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
     #normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
-    ori_data_sample_covariance = np.cov(ori_data_sample[:ori_data_sample.shape[0]])
+    ori_data_sample_covariance = np.cov(ori_data_sample[:ori_data_sample.shape[0]])  #FIXME: quitar el corte
     generated_data_covariance = np.cov(generated_data_sample)
     covariance_diff_matrix = ori_data_sample_covariance - generated_data_covariance
     l1_norms_avg = np.mean([np.linalg.norm(row) for row in covariance_diff_matrix])
@@ -255,6 +267,11 @@ if __name__ == '__main__':
     parser.add_argument(
         '--seq_len',
         type=int)
+    #implementar diccionario de configuración por tipo de traza
+    parser.add_argument(
+        '--trace',
+        default='alibaba2018',
+        type=str)
 
     args = parser.parse_args()
     main(args)
