@@ -45,15 +45,12 @@ def create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, pat
 def generate_figures_by_column(column_number, column_name, generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, n_file, seq_len, timestamp_frequency_secs, column_config):
     path_to_save_metrics_for_file_number = path_to_save_metrics+str(n_file)+'-'
     if ("y_axis_min" in column_config and "y_axis_max" in column_config):
-        y_axis = [column_config['y_axis_min'], column_config['y_axis_max']]
+        axis = [0, seq_len, column_config['y_axis_min'], column_config['y_axis_max']]
     else:
-        y_axis = [np.amin(ori_data_sample[:, column_number]), np.amax(ori_data_sample[:, column_number])]
-    create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=[0, seq_len, y_axis], name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics_for_file_number)
-    # generate_figures_grouped_by_minutes_various_ori_samples(1/6, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
-    # generate_figures_grouped_by_minutes_various_ori_samples(1, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
-    # generate_figures_grouped_by_minutes_various_ori_samples(10, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
-    # generate_figures_grouped_by_minutes_various_ori_samples(30, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
-    # generate_figures_grouped_by_minutes_various_ori_samples(60, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
+        axis = [0, seq_len, np.amin(ori_data_sample[:, column_number]), np.amax(ori_data_sample[:, column_number])]
+
+    create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=axis, name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics_for_file_number)
+
     generate_figures_grouped_by_minutes_various_ori_samples(5, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, timestamp_frequency_secs, 5)
     generate_figures_grouped_by_minutes_various_ori_samples(10, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, timestamp_frequency_secs, 5)
     generate_figures_grouped_by_minutes_various_ori_samples(30, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, timestamp_frequency_secs, 5)
