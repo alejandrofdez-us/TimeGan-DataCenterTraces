@@ -59,7 +59,7 @@ def generate_figures_grouped_by_minutes_various_ori_samples (minutes, column_num
     delta_ori_column_array = [compute_grouped_delta_from_sample(column_number, minutes, get_ori_data_sample(seq_len, ori_data), seq_len, timestamp_frequency_secs ) for i in
                         range(n_ori_samples)]
 
-    delta_gen_column = compute_grouped_delta_from_sample(column_number, minutes, generated_data_sample, seq_len)
+    delta_gen_column = compute_grouped_delta_from_sample(column_number, minutes, generated_data_sample, seq_len, timestamp_frequency_secs)
 
     max_y_value = max(np.amax(delta_ori_column_array), np.amax(delta_gen_column))
     min_y_value = min(np.amin(delta_ori_column_array), np.amin(delta_gen_column))
