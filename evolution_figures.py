@@ -20,7 +20,7 @@ def create_figure(ori_column_values_array, generated_column_values, axis, name, 
         i += 1
 
     plt.plot(generated_column_values, c="blue", label="Synthetic", linewidth=2)
-    if axis:
+    if axis is not None:
         plt.axis(axis)
     else:
         plt.xlim([0, len(ori_column_values_array)])
