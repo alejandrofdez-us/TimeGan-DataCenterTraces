@@ -9,7 +9,7 @@ from itertools import cycle
 
 
 
-def create_figure(ori_column_values_array, generated_column_values,axis, name, path_to_save_metrics):
+def create_figure(ori_column_values_array, generated_column_values, axis, name, path_to_save_metrics):
     plt.rcParams["figure.figsize"] = (18, 3)
     f, ax = plt.subplots(1)
     i=1
@@ -22,8 +22,7 @@ def create_figure(ori_column_values_array, generated_column_values,axis, name, p
     plt.plot(generated_column_values, c="blue", label="Synthetic", linewidth=2)
     if axis:
         plt.axis(axis)
-    else:
-        plt.xlim([0,8640])
+
     plt.title('PCA plot')
     plt.xlabel('time')
     plt.ylabel(name)
@@ -34,16 +33,20 @@ def create_figure(ori_column_values_array, generated_column_values,axis, name, p
 
 def create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, n_file, dataset_info):
     seq_len = len(ori_data_sample[:,0])
-    column_names = dataset_info['column_names']
-    for column_name in column_names:
-        index = column_names.index(column_name)
+    column_configs = dataset_info['column_config'].items()
+    for column_name, column_config in column_configs:
+        index = column_config['index']
         path_to_save_metrics_column = path_to_save_metrics+'/'+column_name+'/'
         os.makedirs(path_to_save_metrics_column, exist_ok=True)
-        generate_figures_by_column(index, column_name, generated_data_sample,ori_data, ori_data_sample, path_to_save_metrics_column, n_file, seq_len, dataset_info['timestamp_frequency_secs'])
+        generate_figures_by_column(index, column_name, generated_data_sample,ori_data, ori_data_sample, path_to_save_metrics_column, n_file, seq_len, dataset_info['timestamp_frequency_secs'], column_config)
 
-def generate_figures_by_column(column_number, column_name, generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, n_file, seq_len, timestamp_frequency_secs):
+def generate_figures_by_column(column_number, column_name, generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics, n_file, seq_len, timestamp_frequency_secs, column_config):
     path_to_save_metrics_for_file_number = path_to_save_metrics+str(n_file)+'-'
-    create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=[0, seq_len, 0, 100], name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics_for_file_number)
+    if ("y_axis_min" in column_config and "y_axis_max" in column_config):
+        y_axis = [column_config['y_axis_min'], column_config['y_axis_max']]
+    else:
+        y_axis = [np.amin(ori_data_sample[:, column_number]), np.amax(ori_data_sample[:, column_number])]
+    create_figure(ori_column_values_array=[ori_data_sample[:, column_number]], generated_column_values=generated_data_sample[:, column_number], axis=[0, seq_len, y_axis], name=column_name+'_usage', path_to_save_metrics=path_to_save_metrics_for_file_number)
     # generate_figures_grouped_by_minutes_various_ori_samples(1/6, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
     # generate_figures_grouped_by_minutes_various_ori_samples(1, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
     # generate_figures_grouped_by_minutes_various_ori_samples(10, column_number, column_name, generated_data_sample, ori_data, path_to_save_metrics_for_file_number, seq_len, 5)
