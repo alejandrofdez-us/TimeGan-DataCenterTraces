@@ -22,6 +22,8 @@ def create_figure(ori_column_values_array, generated_column_values, axis, name, 
     plt.plot(generated_column_values, c="blue", label="Synthetic", linewidth=2)
     if axis:
         plt.axis(axis)
+    else:
+        plt.xlim([0, len(ori_column_values_array)])
 
     plt.title('PCA plot')
     plt.xlabel('time')
