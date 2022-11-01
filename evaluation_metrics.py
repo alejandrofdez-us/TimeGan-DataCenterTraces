@@ -160,7 +160,7 @@ def initialization(args):
             "timestamp_frequency_secs": 3600,
             "column_config": {
                 "interactions": {
-                    "column_index": 1
+                    "column_index": 0
                 }
             }
         }
