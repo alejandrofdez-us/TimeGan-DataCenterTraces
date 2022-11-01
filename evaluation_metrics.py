@@ -155,6 +155,15 @@ def initialization(args):
                 }
             }
         }
+    elif (args.trace == 'reddit'):
+        dataset_info = {
+            "timestamp_frequency_secs": 3600,
+            "column_config": {
+                "interactions": {
+                    "column_index": 1
+                }
+            }
+        }
 
     return metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics, dataset_info
 
