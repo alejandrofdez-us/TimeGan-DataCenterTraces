@@ -19,6 +19,14 @@ import pandas
 from metrics.visualization_metrics import visualization
 
 import sklearn.metrics as metrics
+
+
+# TODO: Pasar png a vectorial (pdf) https://stackoverflow.com/questions/54101529/how-can-i-export-a-matplotlib-figure-as-a-vector-graphic-with-editable-text-fiel
+# TODO: Métricas por columna
+# TODO: Nueva métrica MSAS Multisequence aggregate similarity. SDV->https://paperswithcode.com/paper/sequential-models-in-the-synthetic-data-vault
+# TODO: Eliminar métricas univariante
+# TODO: pensar en como hacer algo para que itere buscando directorios de experimentos y ejecute las métricas en lugar de ir experimiento a experimento
+# TODO: en metrics.txt imprimir para que se pueda copiar fácil a excel
 def regression_results(y_true, y_pred):
     # Regression metrics
     explained_variance=metrics.explained_variance_score(y_true, y_pred)
@@ -65,6 +73,8 @@ def main (args):
                     computed_metric = compute_dtw(generated_data_sample, ori_data_sample)
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
+                if metric == 'ks':  # menor valor mejor
+                    computed_metric = compute_ks(ori_data, generated_data_sample, dataset_info)
                 if metric == 'cc': #mayor valor peor. covarianza
                     computed_metric = compute_cc(generated_data_sample, ori_data_sample)
                 if metric == 'cp': #mayor valor peor. coeficiente de pearson
@@ -194,6 +204,9 @@ def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_exper
         f.write(repr(metrics_results))
     print("Metrics saved in file", f.name)
 
+def compute_ks (generated_data_sample, ori_data_sample, dataset_info):
+    column_indexes = dataset_info['column_config']
+    return statistics.mean([scipy.stats.ks_2samp(zip(generated_data_sample[column_index], ori_data_sample[column_index][0]), zip(generated_data_sample[column_index], ori_data_sample[column_index][1])) for column_index in column_indexes])
 
 def compute_dtw(generated_data_sample, ori_data_sample):
     sample_lenght = len(generated_data_sample)
