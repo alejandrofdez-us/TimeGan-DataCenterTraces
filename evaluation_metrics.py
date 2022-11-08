@@ -28,6 +28,14 @@ import sklearn.metrics as metrics
 
 
 def main (args):
+    if (args.recursive == True):
+        print ("Recursiva")
+    else:
+        compute_metrics(args)
+
+
+def compute_metrics (args):
+
     metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics, dataset_info = initialization(args)
 
     ori_data = np.loadtxt(args.ori_data_filename, delimiter=",", skiprows=0)
@@ -286,10 +294,6 @@ if __name__ == '__main__':
         default='mmd',
         type=str)
     parser.add_argument(
-        '--ori_sample_size',
-        default='1000',
-        type=int)
-    parser.add_argument(
         '--seq_len',
         type=int)
     #implementar diccionario de configuración por tipo de traza
@@ -297,6 +301,10 @@ if __name__ == '__main__':
         '--trace',
         default='alibaba2018',
         type=str)
+    parser.add_argument(
+        '--recursive',
+        default='false',
+        type=bool)
 
     args = parser.parse_args()
     main(args)
