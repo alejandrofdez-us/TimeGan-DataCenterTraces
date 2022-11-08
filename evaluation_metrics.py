@@ -206,7 +206,7 @@ def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_exper
 
 def compute_ks (generated_data_sample, ori_data_sample, dataset_info):
     column_indexes = dataset_info['column_config']
-    return statistics.mean([scipy.stats.ks_2samp(zip(generated_data_sample[column_index], ori_data_sample[column_index][0]), zip(generated_data_sample[column_index], ori_data_sample[column_index][1])) for column_index in column_indexes])
+    return statistics.mean([scipy.stats.ks_2samp(zip(generated_data_sample[:,column_index], ori_data_sample[:,column_index][0]), zip(generated_data_sample[:,column_index], ori_data_sample[:,column_index][1])) for column_index in column_indexes])
 
 def compute_dtw(generated_data_sample, ori_data_sample):
     sample_lenght = len(generated_data_sample)
