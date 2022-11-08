@@ -30,9 +30,14 @@ import sklearn.metrics as metrics
 def main (args):
     if (args.recursive == 'true'):
         print ("Recursiva")
+        root_dir = args.experiment_dir
+        for subdir, dirs, files in os.walk(root_dir):
+            print("Dirs", dirs)
+            print('Subdirs', subdir)
+            print('Files', files)
+
     else:
         compute_metrics(args)
-
 
 def compute_metrics (args):
 
