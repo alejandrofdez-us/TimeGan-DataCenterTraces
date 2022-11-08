@@ -21,28 +21,11 @@ from metrics.visualization_metrics import visualization
 import sklearn.metrics as metrics
 
 
-# TODO: Pasar png a vectorial (pdf) https://stackoverflow.com/questions/54101529/how-can-i-export-a-matplotlib-figure-as-a-vector-graphic-with-editable-text-fiel
 # TODO: Métricas por columna
 # TODO: Nueva métrica MSAS Multisequence aggregate similarity. SDV->https://paperswithcode.com/paper/sequential-models-in-the-synthetic-data-vault
 # TODO: Eliminar métricas univariante
 # TODO: pensar en como hacer algo para que itere buscando directorios de experimentos y ejecute las métricas en lugar de ir experimiento a experimento
 # TODO: en metrics.txt imprimir para que se pueda copiar fácil a excel
-def regression_results(y_true, y_pred):
-    # Regression metrics
-    explained_variance=metrics.explained_variance_score(y_true, y_pred)
-    mean_absolute_error=metrics.mean_absolute_error(y_true, y_pred)
-    #mse=metrics.mean_squared_error(y_true, y_pred)
-    #mean_squared_log_error=metrics.mean_squared_log_error(y_true, y_pred)
-    median_absolute_error=metrics.median_absolute_error(y_true, y_pred)
-    r2=metrics.r2_score(y_true, y_pred)
-    print('explained_variance: ', round(explained_variance,4))
-    #print('mean_squared_log_error: ', round(mean_squared_log_error,4))
-    print('r2: ', round(r2,4))
-    print('MAE: ', round(mean_absolute_error,4))
-    #print('MSE: ', round(mse,4))
-    #print('RMSE: ', round(np.sqrt(mse),4))
-
-
 
 
 def main (args):
@@ -81,14 +64,6 @@ def main (args):
                     computed_metric = compute_cp(generated_data_sample, ori_data_sample)
                 if metric == 'hi':  # mayor valor peor
                     computed_metric = compute_hi(generated_data_sample, ori_data_sample)
-                if metric =='mae':
-                    computed_metric = compute_mae(generated_data_sample, ori_data_sample)
-                if metric == 'r2':
-                    computed_metric = compute_r2(generated_data_sample, ori_data_sample)
-                if metric =='ev':
-                    computed_metric = compute_ev(generated_data_sample, ori_data_sample)
-                if metric =='mi':
-                    computed_metric = compute_mi(generated_data_sample, ori_data_sample)
                 if metric == 'evolution_figures':
                     create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/', n_files_iteration, dataset_info)
                 if metric != 'evolution_figures':
@@ -216,29 +191,6 @@ def compute_dtw(generated_data_sample, ori_data_sample):
     processed_ori_data_sample = np.insert(processed_ori_data_sample, 0, range(sample_lenght), axis=1)
 
     return dtw_ndim.distance_fast(processed_generated_data_sample, processed_ori_data_sample)
-
-def compute_mae(generated_data_sample, ori_data_sample):
-    return metrics.mean_absolute_error(ori_data_sample, generated_data_sample)
-
-def compute_r2(generated_data_sample, ori_data_sample):
-    return metrics.r2_score(ori_data_sample, generated_data_sample)
-
-def compute_ev(generated_data_sample, ori_data_sample):
-    return metrics.explained_variance_score(ori_data_sample, generated_data_sample)
-
-def compute_mi(generated_data_sample, ori_data_sample):
-    #return pyinform.mutual_info(ori_data_sample[:,1],generated_data_sample[:,1])
-    mi_columns = []
-    for column in range(1,3):
-        #print (column)
-        ori_data_column_values = ori_data_sample[:,column]
-        #print ("ori_data_column_values", ori_data_column_values)
-        generated_data_column_values = generated_data_sample[:, column]
-        #print("generated_data_column_values", generated_data_column_values)
-        mi_result = pyinform.mutual_info(ori_data_column_values,generated_data_column_values)
-        mi_columns.append(mi_result)
-
-    return np.mean(mi_columns)
 
 def compute_cp(generated_data_sample, ori_data_sample):
     #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
