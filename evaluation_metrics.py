@@ -23,8 +23,6 @@ import sklearn.metrics as metrics
 
 # TODO: Métricas por columna
 # TODO: Nueva métrica MSAS Multisequence aggregate similarity. SDV->https://paperswithcode.com/paper/sequential-models-in-the-synthetic-data-vault
-# TODO: pensar en como hacer algo para que itere buscando directorios de experimentos y ejecute las métricas en lugar de ir experimiento a experimento
-# TODO: en metrics.txt imprimir para que se pueda copiar fácil a excel
 
 
 def main (args):
