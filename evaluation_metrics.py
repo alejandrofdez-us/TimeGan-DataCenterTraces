@@ -169,11 +169,13 @@ def preprocess_dataset(ori_data, seq_len):
 
 
 def results_for_excel(avg_results):
-    appended =''
-    for result in avg_results:
-        appended += str(result).replace('.',',')+';'
+    appended = ''
+    computed_metrics = ''
+    for metric_name in avg_results:
+        computed_metrics += metric_name
+        appended += str(avg_results[metric_name]).replace('.', ',')+';'
 
-    return "Results in excel format: "+ '\n' + appended
+    return 'Results of the following metrics: ' + computed_metrics + ' in excel format:' + '\n' + appended
 
 
 def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics):
