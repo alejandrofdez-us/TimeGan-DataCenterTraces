@@ -35,7 +35,7 @@ def main (args):
             first_level_dirs = dirs
             break
         for dir in first_level_dirs:
-            args.experiment_dir = dir
+            args.experiment_dir = root_dir+dir
             print("Computing metrics for directory ", dir)
             compute_metrics(args)
     else:
