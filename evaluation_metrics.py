@@ -74,7 +74,7 @@ def main (args):
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
                 if metric == 'ks':  # menor valor mejor
-                    computed_metric = compute_ks(ori_data, generated_data_sample, dataset_info)
+                    computed_metric = compute_ks(ori_data_sample, generated_data_sample)
                 if metric == 'cc': #mayor valor peor. covarianza
                     computed_metric = compute_cc(generated_data_sample, ori_data_sample)
                 if metric == 'cp': #mayor valor peor. coeficiente de pearson
@@ -204,8 +204,8 @@ def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_exper
         f.write(repr(metrics_results))
     print("Metrics saved in file", f.name)
 
-def compute_ks (generated_data_sample, ori_data_sample, dataset_info):
-    column_indexes = dataset_info['column_config']
+def compute_ks (ori_data_sample, generated_data_sample):
+    column_indexes = range(generated_data_sample.shape[1])
     return statistics.mean([scipy.stats.ks_2samp(zip(generated_data_sample[:,column_index], ori_data_sample[:,column_index][0]), zip(generated_data_sample[:,column_index], ori_data_sample[:,column_index][1])) for column_index in column_indexes])
 
 def compute_dtw(generated_data_sample, ori_data_sample):
