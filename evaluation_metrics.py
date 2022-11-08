@@ -78,7 +78,7 @@ def main (args):
 
 
 def initialization(args):
-    path_to_save_metrics = args.experiment_dir + "/metrics/"
+    path_to_save_metrics = args.experiment_dir + "/evaluation_metrics/"
     f = open(args.experiment_dir + '/parameters.txt', 'r')
     saved_experiments_parameters = f.readline()
     f = open(args.experiment_dir + '/metrics.txt', 'r')
