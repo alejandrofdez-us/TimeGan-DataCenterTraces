@@ -55,6 +55,10 @@ def compute_metrics (args):
     for metric in metrics_list:
         print ('Computando: ', metric)
         metrics_results[metric] = []
+        if (metric == 'mmd'):
+            for column in range(ori_data.shape[1]):
+                metrics_results[metric + '-' + str(column)] = []
+
         n_files_iteration = 0
         for filename in os.listdir(args.experiment_dir+'/generated_data'):
             ori_data_sample = get_ori_data_sample(args, ori_data)
