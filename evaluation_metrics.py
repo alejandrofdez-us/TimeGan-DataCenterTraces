@@ -28,7 +28,7 @@ import sklearn.metrics as metrics
 
 
 def main (args):
-    if (args.recursive == True):
+    if (args.recursive == 'true'):
         print ("Recursiva")
     else:
         compute_metrics(args)
@@ -304,7 +304,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--recursive',
         default='false',
-        type=bool)
+        type=str)
 
     args = parser.parse_args()
     main(args)
