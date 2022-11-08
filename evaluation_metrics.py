@@ -64,6 +64,8 @@ def compute_metrics (args):
                 computed_metric = 0
                 if metric == 'mmd': #mayor valor más distintas son
                     computed_metric = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
+                    for column in range (generated_data_sample.shape[1]):
+                        metrics_results[metric+'-'+str(column)] = mmd_rbf(generated_data_sample[:,column], ori_data_sample[:,column])
                 if metric == 'dtw': #mayor valor más distintas son
                     computed_metric = compute_dtw(generated_data_sample, ori_data_sample)
                 if metric == 'kl': #mayor valor peor
