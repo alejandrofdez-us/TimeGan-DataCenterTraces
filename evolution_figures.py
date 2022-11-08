@@ -29,7 +29,7 @@ def create_figure(ori_column_values_array, generated_column_values, axis, name, 
     plt.xlabel('time')
     plt.ylabel(name)
     ax.legend()
-    plt.savefig(path_to_save_metrics + name + '.png')
+    plt.savefig(path_to_save_metrics + name + '.pdf', format='pdf')
     plt.close()
 
 
