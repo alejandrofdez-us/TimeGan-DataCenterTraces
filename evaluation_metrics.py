@@ -23,7 +23,6 @@ import sklearn.metrics as metrics
 
 # TODO: Métricas por columna
 # TODO: Nueva métrica MSAS Multisequence aggregate similarity. SDV->https://paperswithcode.com/paper/sequential-models-in-the-synthetic-data-vault
-# TODO: Eliminar métricas univariante
 # TODO: pensar en como hacer algo para que itere buscando directorios de experimentos y ejecute las métricas en lugar de ir experimiento a experimento
 # TODO: en metrics.txt imprimir para que se pueda copiar fácil a excel
 
@@ -44,9 +43,9 @@ def main (args):
         print ('Computando: ', metric)
         metrics_results[metric] = []
         n_files_iteration = 0
-        for filename in os.listdir(args.generated_data_dir):
+        for filename in os.listdir(args.experiment_data_dir+'/generated_data'):
             ori_data_sample = get_ori_data_sample(args, ori_data)
-            f = os.path.join(args.generated_data_dir, filename)
+            f = os.path.join(args.experiment_data_dir+'/generated_data', filename)
             if os.path.isfile(f): # checking if it is a file
                 generated_data_sample = np.loadtxt(f, delimiter=",")
                 computed_metric = 0
@@ -79,14 +78,14 @@ def main (args):
 
 
 def initialization(args):
-    path_to_save_metrics = args.generated_data_dir + "/metrics/"
-    f = open(args.generated_data_dir + '/../parameters.txt', 'r')
+    path_to_save_metrics = args.experiment_data_dir + "/metrics"
+    f = open(args.experiment_data_dir + '/parameters.txt', 'r')
     saved_experiments_parameters = f.readline()
-    f = open(args.generated_data_dir + '/../metrics.txt', 'r')
+    f = open(args.experiment_data_dir + '/metrics.txt', 'r')
     saved_metrics = f.readline()
     args.seq_len = int(re.search("\Wseq_len=([^,}]+)\)", saved_experiments_parameters).group(1))
     os.makedirs(path_to_save_metrics, exist_ok=True)
-    os.makedirs(path_to_save_metrics+'figures/', exist_ok=True)
+    os.makedirs(path_to_save_metrics+'/figures/', exist_ok=True)
 
     metrics_list = [metric for metric in args.metrics.split(',')]
 
@@ -246,8 +245,8 @@ def generate_visualization_figures(args, directory_name, metrics_list, ori_data)
     ori_data_for_visualization = preprocess_dataset(ori_data, args.seq_len)
     generated_data = []
     n_samples = 0
-    for filename in os.listdir(args.generated_data_dir):
-        f = os.path.join(args.generated_data_dir, filename)
+    for filename in os.listdir(args.experiment_data_dir+'/generated_data'):
+        f = os.path.join(args.experiment_data_dir+'/generated_data', filename)
         if os.path.isfile(f):  # checking if it is a file
             n_samples = n_samples + 1
             generated_data_sample = np.loadtxt(f, delimiter=",")
@@ -268,7 +267,7 @@ if __name__ == '__main__':
         default='data/mu_day3_cut.csv',
         type=str)
     parser.add_argument(
-        '--generated_data_dir',
+        '--experiment_data_dir',
         type=str)
     parser.add_argument(
         '--metrics',
