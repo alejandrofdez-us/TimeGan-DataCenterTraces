@@ -87,6 +87,7 @@ def compute_metrics (args):
 
     for metric, results in metrics_results.items():
         if metric != 'tsne' and metric != 'pca' and metric != 'evolution_figures':
+            print ('Metrics_results['+metric+']',metrics_results[metric])
             avg_results[metric] = statistics.mean(metrics_results[metric])
 
     save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics)
