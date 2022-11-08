@@ -167,6 +167,15 @@ def preprocess_dataset(ori_data, seq_len):
 
     return data
 
+
+def results_for_excel(avg_results):
+    appended =''
+    for result in avg_results:
+        appended += str(result).replace('.',',')+';'
+
+    return "Results in excel format: "+ '\n' + appended
+
+
 def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics):
     data_name = re.search("\Wdata_name=([^,}]+)", saved_experiments_parameters).group(1).replace("'","")
     iterations = re.search("\Witeration=([^,}]+)", saved_experiments_parameters).group(1)
@@ -175,6 +184,7 @@ def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_exper
         f.write(saved_experiments_parameters + '\n\n')
         f.write(saved_metrics +'\n\n')
         f.write(repr(avg_results) + '\n')
+        f.write(results_for_excel(avg_results) + '\n')
         f.write(repr(metrics_results))
     print("Metrics saved in file", f.name)
 
