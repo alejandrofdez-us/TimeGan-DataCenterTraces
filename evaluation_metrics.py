@@ -37,6 +37,7 @@ def main (args):
             # try:
             print("Computing metrics for directory ", dir)
             saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
+            print(saved_experiment_parameters)
             ns = Namespace(saved_experiment_parameters)
             saved_experiment_parameters_dict = vars(ns)
             parameters_values = ''
