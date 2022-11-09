@@ -42,10 +42,11 @@ def main (args):
                 computed_metrics.append(dir+';'+metrics_values)
             except:
                 print('Error computing experiment dir:', args.experiment_dir)
-        with open(root_dir + 'metrics.txt', 'w') as f:
+        with open(root_dir + 'experiments_metrics.csv', 'w') as f:
             f.write('experiment_dir_name;'+saved_metrics+'\n')
             for computed_metric in computed_metrics:
                 f.write(computed_metric + '\n')
+            print ("\nCSVs for all experiments metrics results saved in:\n",root_dir + 'experiments_metrics.csv')
 
     else:
         compute_metrics(args)
