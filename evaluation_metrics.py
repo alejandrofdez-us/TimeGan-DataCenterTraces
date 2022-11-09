@@ -31,24 +31,23 @@ def main (args):
             first_level_dirs = dirs
             break
         computed_metrics = []
-        parameters_keys = ''
         for dir in first_level_dirs:
             args.experiment_dir = root_dir+dir
-            # try:
-            print("Computing metrics for directory ", dir)
-            saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
-            print(saved_experiment_parameters)
-            ns = Namespace(saved_experiment_parameters)
-            saved_experiment_parameters_dict = vars(ns)
-            parameters_values = ''
-            for parameter_value in saved_experiment_parameters_dict.values():
-                parameters_values += parameter_value+';'
-            for parameter_key in saved_experiment_parameters_dict.keys():
-                parameters_keys += parameter_key+';'
-            computed_metrics.append(dir+';'+parameters_values+metrics_values)
-            # except Exception as e:
-            #     print('Error computing experiment dir:', args.experiment_dir)
-            #     print ('Exception:', e.message)
+            try:
+                print("Computing metrics for directory ", dir)
+                saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
+                ns = Namespace(saved_experiment_parameters)
+                saved_experiment_parameters_dict = vars(ns)
+                parameters_values = ''
+                parameters_keys = ''
+                for parameter_value in saved_experiment_parameters_dict.values():
+                    parameters_values += parameter_value+';'
+                for parameter_key in saved_experiment_parameters_dict.keys():
+                    parameters_keys += parameter_key+';'
+                computed_metrics.append(dir+';'+parameters_values+metrics_values)
+            except Exception as e:
+                print('Error computing experiment dir:', args.experiment_dir)
+                print ('Exception:', e)
         with open(root_dir + 'experiments_metrics.csv', 'w') as f:
             f.write('experiment_dir_name;'+parameters_keys+saved_metrics+'\n')
             for computed_metric in computed_metrics:
@@ -350,6 +349,3 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     main(args)
-
-
-
