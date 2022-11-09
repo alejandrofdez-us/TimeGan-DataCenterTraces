@@ -58,7 +58,7 @@ def compute_metrics (args):
     for metric in metrics_list:
         print ('Computando: ', metric)
         metrics_results[metric] = []
-        if (metric == 'mmd'):
+        if (metric == 'mmd' or metric == 'dtw' or metric == 'kl' or metric == 'hi'):
             for column in range(ori_data.shape[1]):
                 metrics_results[metric + '-' + str(column)] = []
 
@@ -71,12 +71,16 @@ def compute_metrics (args):
                 computed_metric = 0
                 if metric == 'mmd': #mayor valor más distintas son
                     computed_metric = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
-                    for column in range (generated_data_sample.shape[1]):
+                    for column in range(generated_data_sample.shape[1]):
                         metrics_results[metric+'-'+str(column)].append(mmd_rbf(generated_data_sample[:,column].reshape(-1, 1), ori_data_sample[:,column].reshape(-1, 1)))
                 if metric == 'dtw': #mayor valor más distintas son
                     computed_metric = compute_dtw(generated_data_sample, ori_data_sample)
+                    for column in range(generated_data_sample.shape[1]):
+                        metrics_results[metric+'-'+str(column)].append(compute_dtw(generated_data_sample[:,column], ori_data_sample[:,column]))
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
+                    for column in range(generated_data_sample.shape[1]):
+                        metrics_results[metric+'-'+str(column)].append(KLdivergence(ori_data[:,column], generated_data_sample[:,column]))
                 if metric == 'ks':  # menor valor mejor
                     computed_metric = compute_ks(generated_data_sample, ori_data_sample)
                 if metric == 'cc': #mayor valor peor. covarianza
@@ -85,6 +89,8 @@ def compute_metrics (args):
                     computed_metric = compute_cp(generated_data_sample, ori_data_sample)
                 if metric == 'hi':  # mayor valor peor
                     computed_metric = compute_hi(generated_data_sample, ori_data_sample)
+                    for column in range(generated_data_sample.shape[1]):
+                        metrics_results[metric+'-'+str(column)].append(compute_hi(generated_data_sample[:,column], ori_data_sample[:,column]))
                 if metric == 'evolution_figures':
                     create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/', n_files_iteration, dataset_info)
                 if metric != 'evolution_figures':
