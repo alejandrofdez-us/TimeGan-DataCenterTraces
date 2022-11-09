@@ -33,13 +33,20 @@ def main (args):
         for subdir, dirs, files in os.walk(root_dir):
             first_level_dirs = dirs
             break
+        computed_metrics = []
         for dir in first_level_dirs:
             args.experiment_dir = root_dir+dir
             try:
                 print("Computing metrics for directory ", dir)
-                compute_metrics(args)
+                saved_metrics, metrics_values = compute_metrics(args)
+                computed_metrics.append(dir+';'+metrics_values)
             except:
-                print('Error computing experiment dir:',args.experiment_dir)
+                print('Error computing experiment dir:', args.experiment_dir)
+        with open(root_dir + 'metrics.txt', 'w') as f:
+            f.write('experiment_dir_name;'+saved_metrics)
+            for computed_metric in computed_metrics:
+                f.write(computed_metric + '\n')
+
     else:
         compute_metrics(args)
 
@@ -109,7 +116,7 @@ def compute_metrics (args):
             print ('Metrics_results['+metric+']',metrics_results[metric])
             avg_results[metric] = statistics.mean(metrics_results[metric])
 
-    save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics)
+    return save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics)
 
 
 def initialization(args):
@@ -204,14 +211,13 @@ def preprocess_dataset(ori_data, seq_len):
 
 
 def results_for_excel(avg_results):
-    appended = ''
+    metrics_values = ''
     computed_metrics = ''
     for metric_name in avg_results:
-        computed_metrics += metric_name+','
-        appended += str(avg_results[metric_name]).replace('.', ',')+';'
+        computed_metrics += metric_name+';'
+        metrics_values += str(avg_results[metric_name]).replace('.', ',')+';'
 
-    return 'Results of the following metrics: ' + computed_metrics + ' in spanish locale Excel format:' + '\n' + appended
-
+    return computed_metrics, metrics_values
 
 def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics):
     data_name = re.search("\Wdata_name=([^,}]+)", saved_experiments_parameters).group(1).replace("'","")
@@ -221,9 +227,11 @@ def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_exper
         f.write(saved_experiments_parameters + '\n\n')
         f.write(saved_metrics +'\n\n')
         f.write(repr(avg_results) + '\n')
-        f.write(results_for_excel(avg_results) + '\n')
+        computed_metrics, metrics_values = results_for_excel(avg_results)
+        f.write( 'Results of the following metrics: ' + computed_metrics + ' in spanish locale Excel format:' + '\n' + metrics_values + '\n')
         f.write(repr(metrics_results))
     print("Metrics saved in file", f.name)
+    return computed_metrics, metrics_values
 
 def compute_ks (generated_data_sample, ori_data_sample):
     column_indexes = range(generated_data_sample.shape[1])
