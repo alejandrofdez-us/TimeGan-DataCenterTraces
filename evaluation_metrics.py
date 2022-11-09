@@ -44,7 +44,6 @@ def main (args):
                     is_header_printed = True
                 with open(root_dir + 'experiments_metrics.csv', 'a') as f:
                     f.write(dir+';'+parameters_values+metrics_values+ '\n')
-                raise Exception("Error")
             except Exception as e:
                 print('Error computing experiment dir:', args.experiment_dir)
             print ("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
