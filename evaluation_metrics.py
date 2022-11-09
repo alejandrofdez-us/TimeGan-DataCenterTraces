@@ -23,10 +23,6 @@ from metrics.visualization_metrics import visualization
 import sklearn.metrics as metrics
 
 
-# TODO: Métricas por columna
-# TODO: Nueva métrica MSAS Multisequence aggregate similarity. SDV->https://paperswithcode.com/paper/sequential-models-in-the-synthetic-data-vault
-
-
 def main (args):
     if (args.recursive == 'true'):
         root_dir = args.experiment_dir
@@ -40,12 +36,20 @@ def main (args):
             try:
                 print("Computing metrics for directory ", dir)
                 saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
-                computed_metrics.append(dir+';'+saved_experiment_parameters+';'+metrics_values)
+                ns = Namespace(saved_experiment_parameters)
+                saved_experiment_parameters_dict = vars(ns)
+                parameters_values = ''
+                parameters_keys = ''
+                for parameter_value in saved_experiment_parameters_dict.values():
+                    parameters_values += parameter_value+';'
+                for parameter_key in saved_experiment_parameters_dict.keys():
+                    parameters_keys += parameter_key+';'
+                computed_metrics.append(dir+';'+parameters_values+metrics_values)
             except Exception as e:
                 print('Error computing experiment dir:', args.experiment_dir)
                 print ('Exception:', e)
         with open(root_dir + 'experiments_metrics.csv', 'w') as f:
-            f.write('experiment_dir_name;'+'experiment_parameters;'+saved_metrics+'\n')
+            f.write('experiment_dir_name;'+parameters_keys+saved_metrics+'\n')
             for computed_metric in computed_metrics:
                 f.write(computed_metric + '\n')
             print ("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
