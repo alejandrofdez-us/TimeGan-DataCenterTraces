@@ -36,14 +36,7 @@ def main (args):
             try:
                 print("Computing metrics for directory ", dir)
                 saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
-                ns = Namespace(saved_experiment_parameters)
-                saved_experiment_parameters_dict = vars(ns)
-                parameters_values = ''
-                parameters_keys = ''
-                for parameter_value in saved_experiment_parameters_dict.values():
-                    parameters_values += parameter_value+';'
-                for parameter_key in saved_experiment_parameters_dict.keys():
-                    parameters_keys += parameter_key+';'
+                parameters_keys, parameters_values = extract_experiment_parameters(saved_experiment_parameters)
                 computed_metrics.append(dir+';'+parameters_values+metrics_values)
             except Exception as e:
                 print('Error computing experiment dir:', args.experiment_dir)
@@ -56,6 +49,19 @@ def main (args):
 
     else:
         compute_metrics(args)
+
+
+def extract_experiment_parameters(saved_experiment_parameters):
+    saved_experiment_parameters_dict = dict(
+        item.split("=") for item in saved_experiment_parameters.replace('Namespace(', '').replace(')', '').split(", "))
+    parameters_values = ''
+    parameters_keys = ''
+    for parameter_value in saved_experiment_parameters_dict.values():
+        parameters_values += parameter_value + ';'
+    for parameter_key in saved_experiment_parameters_dict.keys():
+        parameters_keys += parameter_key + ';'
+    return parameters_keys, parameters_values
+
 
 def compute_metrics (args):
 
