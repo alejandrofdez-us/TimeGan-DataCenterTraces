@@ -7,7 +7,6 @@ import statistics
 import numpy as np
 import pandas as pd
 import scipy
-import pyinform
 
 from evolution_figures import create_usage_evolution
 from metrics.kl import KLdivergence, JSDistance
@@ -91,12 +90,12 @@ def compute_metrics (args):
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric + '-' + str(column)].append(KLDivergenceUnivariate(ori_data[:,column].reshape(-1, 1), generated_data_sample[:,column].reshape(-1, 1))[0])
-                        metrics_results[metric + '-JSD-' + str(column)].append(JSDistance(ori_data[:, column].reshape(-1, 1), generated_data_sample[:, column].reshape(-1, 1)))
+                        metrics_results[metric + '-' + str(column)].append(KLDivergenceUnivariate(ori_data_sample[:,column].reshape(-1, 1), generated_data_sample[:,column].reshape(-1, 1))[0])
+                        metrics_results[metric + '-JSD-' + str(column)].append(JSDistance(ori_data_sample[:, column].reshape(-1, 1), generated_data_sample[:, column].reshape(-1, 1)))
                 if metric == 'ks':  # menor valor mejor
                     computed_metric = compute_ks(generated_data_sample, ori_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric + '-' + str(column)].append(compute_ks(ori_data[:,column].reshape(-1, 1), generated_data_sample[:,column].reshape(-1, 1)))
+                        metrics_results[metric + '-' + str(column)].append(compute_ks(generated_data_sample[:,column].reshape(-1, 1), ori_data_sample[:,column].reshape(-1, 1)))
                 if metric == 'cc': #mayor valor peor. covarianza
                     computed_metric = compute_cc(generated_data_sample, ori_data_sample)
                 if metric == 'cp': #mayor valor peor. coeficiente de pearson
