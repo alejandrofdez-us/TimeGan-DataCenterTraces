@@ -43,7 +43,7 @@ def main (args):
             except:
                 print('Error computing experiment dir:', args.experiment_dir)
         with open(root_dir + 'metrics.txt', 'w') as f:
-            f.write('experiment_dir_name;'+saved_metrics)
+            f.write('experiment_dir_name;'+saved_metrics+'\n')
             for computed_metric in computed_metrics:
                 f.write(computed_metric + '\n')
 
