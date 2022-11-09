@@ -30,10 +30,9 @@ def main (args):
         for subdir, dirs, files in os.walk(root_dir):
             first_level_dirs = dirs
             break
-        computed_metrics = []
+        is_header_printed = False
         for dir in first_level_dirs:
             args.experiment_dir = root_dir+dir
-            is_header_printed = False
             try:
                 print("Computing metrics for directory ", dir)
                 saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
@@ -43,12 +42,14 @@ def main (args):
                         print("Printing header")
                         f.write('experiment_dir_name;' + parameters_keys + saved_metrics + '\n')
                     is_header_printed = True
+
                 with open(root_dir + 'experiments_metrics.csv', 'a') as f:
                     f.write(dir+';'+parameters_values+metrics_values+ '\n')
 
             except Exception as e:
                 print('Error computing experiment dir:', args.experiment_dir)
-            print ("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
+
+        print ("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
     else:
         compute_metrics(args)
 
