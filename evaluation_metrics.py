@@ -41,8 +41,9 @@ def main (args):
                 print("Computing metrics for directory ", dir)
                 saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
                 computed_metrics.append(dir+';'+saved_experiment_parameters+';'+metrics_values)
-            except:
+            except Exception as e:
                 print('Error computing experiment dir:', args.experiment_dir)
+                print ('Exception:', e)
         with open(root_dir + 'experiments_metrics.csv', 'w') as f:
             f.write('experiment_dir_name;'+'experiment_parameters;'+saved_metrics+'\n')
             for computed_metric in computed_metrics:
