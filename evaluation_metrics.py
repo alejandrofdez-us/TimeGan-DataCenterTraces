@@ -113,14 +113,13 @@ def compute_metrics (args):
 
     for metric, results in metrics_results.items():
         if metric != 'tsne' and metric != 'pca' and metric != 'evolution_figures':
-            print ('Metrics_results['+metric+']',metrics_results[metric])
             avg_results[metric] = statistics.mean(metrics_results[metric])
 
     return save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics)
 
 
 def initialization(args):
-    path_to_save_metrics = args.experiment_dir + "evaluation_metrics/"
+    path_to_save_metrics = args.experiment_dir + "/evaluation_metrics/"
     f = open(args.experiment_dir + '/parameters.txt', 'r')
     saved_experiments_parameters = f.readline()
     f = open(args.experiment_dir + '/metrics.txt', 'r')
