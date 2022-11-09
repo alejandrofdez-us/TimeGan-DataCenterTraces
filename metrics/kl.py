@@ -1,6 +1,27 @@
 # https://mail.python.org/pipermail/scipy-user/2011-May/029521.html
 
 import numpy as np
+import math
+
+
+def KLDivergenceUnivariate(array_1, array_2, num_bins=100):
+  min_array1 = array_1.min()
+  min_array2 = array_2.min()
+  min_all = min(min_array1, min_array2)
+  max_array1 = array_1.max()
+  max_array2 = array_2.max()
+  max_all = max(max_array1, max_array2)
+  range_values = (min_all, max_all)
+  p = np.histogram(array_1, bins=np.linspace(range_values[0], range_values[1], num_bins + 1))[0] / len(array_1)
+  q = np.histogram(array_2, bins=np.linspace(range_values[0], range_values[1], num_bins + 1))[0] / len(array_2)
+  KL_p_m = sum([p[i] * np.log(p[i] / q[i]) if (p[i] != 0 and q[i] != 0) else 0 for i in range(len(p))])
+  KL_q_m = sum([q[i] * np.log(q[i] / p[i]) if (p[i] != 0 and q[i] != 0) else 0 for i in range(len(p))])
+  return KL_p_m, KL_q_m
+
+def JSDistance(array_1, array_2, num_bins=100):
+    KL_p_m, KL_q_m = KLDivergenceUnivariate(array_1, array_2, num_bins=num_bins)
+    JS_p_q = math.sqrt((KL_p_m + KL_q_m) / 2)
+    return JS_p_q
 
 def KLdivergence(x, y):
   """Compute the Kullback-Leibler divergence between two multivariate samples.

@@ -10,7 +10,8 @@ import scipy
 import pyinform
 
 from evolution_figures import create_usage_evolution
-from metrics.kl import KLdivergence
+from metrics.kl import KLdivergence, JSDistance
+from metrics.kl import KLDivergenceUnivariate
 from metrics.mmd import mmd_rbf
 from dtaidistance import dtw_ndim
 from dtaidistance import dtw
@@ -61,6 +62,8 @@ def compute_metrics (args):
         if (metric == 'mmd' or metric == 'dtw' or metric == 'kl' or metric == 'hi'):
             for column in range(ori_data.shape[1]):
                 metrics_results[metric + '-' + str(column)] = []
+                if(metric == 'kl'):
+                    metrics_results[metric + '-JSD-' + str(column)] = []
 
         n_files_iteration = 0
         for filename in os.listdir(args.experiment_dir+'/generated_data'):
@@ -80,7 +83,8 @@ def compute_metrics (args):
                 if metric == 'kl': #mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric+'-'+str(column)].append(KLdivergence(ori_data[:,column].reshape(-1, 1), generated_data_sample[:,column].reshape(-1, 1)))
+                        metrics_results[metric + '-' + str(column)].append(KLDivergenceUnivariate(ori_data[:,column].reshape(-1, 1), generated_data_sample[:,column].reshape(-1, 1)))
+                        metrics_results[metric + '-JSD-' + str(column)].append(JSDistance(ori_data[:, column].reshape(-1, 1), generated_data_sample[:, column].reshape(-1, 1)))
                 if metric == 'ks':  # menor valor mejor
                     computed_metric = compute_ks(generated_data_sample, ori_data_sample)
                 if metric == 'cc': #mayor valor peor. covarianza
@@ -107,7 +111,7 @@ def compute_metrics (args):
 
 
 def initialization(args):
-    path_to_save_metrics = args.experiment_dir + "/evaluation_metrics/"
+    path_to_save_metrics = args.experiment_dir + "evaluation_metrics/"
     f = open(args.experiment_dir + '/parameters.txt', 'r')
     saved_experiments_parameters = f.readline()
     f = open(args.experiment_dir + '/metrics.txt', 'r')
