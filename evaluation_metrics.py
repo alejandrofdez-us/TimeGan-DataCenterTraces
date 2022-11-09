@@ -31,6 +31,7 @@ def main (args):
             first_level_dirs = dirs
             break
         computed_metrics = []
+        parameters_keys = ''
         for dir in first_level_dirs:
             args.experiment_dir = root_dir+dir
             try:
@@ -39,7 +40,6 @@ def main (args):
                 ns = Namespace(saved_experiment_parameters)
                 saved_experiment_parameters_dict = vars(ns)
                 parameters_values = ''
-                parameters_keys = ''
                 for parameter_value in saved_experiment_parameters_dict.values():
                     parameters_values += parameter_value+';'
                 for parameter_key in saved_experiment_parameters_dict.keys():
