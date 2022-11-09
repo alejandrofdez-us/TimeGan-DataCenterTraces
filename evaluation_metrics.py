@@ -59,7 +59,7 @@ def compute_metrics (args):
     for metric in metrics_list:
         print ('Computando: ', metric)
         metrics_results[metric] = []
-        if (metric == 'mmd' or metric == 'dtw' or metric == 'kl' or metric == 'hi'):
+        if (metric == 'mmd' or metric == 'dtw' or metric == 'kl' or metric == 'hi' or metric == 'ks'):
             for column in range(ori_data.shape[1]):
                 metrics_results[metric + '-' + str(column)] = []
                 if(metric == 'kl'):
@@ -87,6 +87,8 @@ def compute_metrics (args):
                         metrics_results[metric + '-JSD-' + str(column)].append(JSDistance(ori_data[:, column].reshape(-1, 1), generated_data_sample[:, column].reshape(-1, 1)))
                 if metric == 'ks':  # menor valor mejor
                     computed_metric = compute_ks(generated_data_sample, ori_data_sample)
+                    for column in range(generated_data_sample.shape[1]):
+                        metrics_results[metric + '-' + str(column)].append(compute_ks(ori_data[:,column].reshape(-1, 1), generated_data_sample[:,column].reshape(-1, 1)))
                 if metric == 'cc': #mayor valor peor. covarianza
                     computed_metric = compute_cc(generated_data_sample, ori_data_sample)
                 if metric == 'cp': #mayor valor peor. coeficiente de pearson
