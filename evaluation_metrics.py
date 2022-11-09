@@ -90,7 +90,7 @@ def compute_metrics (args):
                 if metric == 'hi':  # mayor valor peor
                     computed_metric = compute_hi(generated_data_sample, ori_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric+'-'+str(column)].append(compute_hi(generated_data_sample[:,column], ori_data_sample[:,column]))
+                        metrics_results[metric+'-'+str(column)].append(compute_hi(generated_data_sample[:,column].reshape(-1, 1), ori_data_sample[:,column].reshape(-1, 1)))
                 if metric == 'evolution_figures':
                     create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/', n_files_iteration, dataset_info)
                 if metric != 'evolution_figures':
