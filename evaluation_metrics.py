@@ -223,7 +223,7 @@ def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_exper
     data_name = re.search("\Wdata_name=([^,}]+)", saved_experiments_parameters).group(1).replace("'","")
     iterations = re.search("\Witeration=([^,}]+)", saved_experiments_parameters).group(1)
     seq_len = re.search("\Wseq_len=([^,}]+)\)", saved_experiments_parameters).group(1)
-    with open(path_to_save_metrics + 'metrics-'+data_name+'-iterations-'+iterations+'-seq_len'+seq_len+'.txt', 'w') as f:
+    with open(path_to_save_metrics + '/metrics-'+data_name+'-iterations-'+iterations+'-seq_len'+seq_len+'.txt', 'w') as f:
         f.write(saved_experiments_parameters + '\n\n')
         f.write(saved_metrics +'\n\n')
         f.write(repr(avg_results) + '\n')
