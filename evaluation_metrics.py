@@ -193,6 +193,18 @@ def initialization(args):
                 }
             }
         }
+    elif (args.trace == 'azure_v2'):
+        dataset_info = {
+            "timestamp_frequency_secs": 300,
+            "column_config": {
+                "cpu_total": {
+                    "column_index": 0
+                },
+                "mem_total": {
+                    "column_index": 1
+                }
+            }
+        }
     elif (args.trace == 'reddit'):
         dataset_info = {
             "timestamp_frequency_secs": 3600,
