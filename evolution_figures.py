@@ -23,7 +23,7 @@ def create_figure(ori_column_values_array, generated_column_values, axis, name, 
     if axis is not None:
         plt.axis(axis)
     else:
-        plt.xlim([0, len(ori_column_values_array)])
+        plt.xlim([0, len(ori_column_values_array[0])])
 
     plt.title('PCA plot')
     plt.xlabel('time')
