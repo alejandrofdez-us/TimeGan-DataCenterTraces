@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 import scipy
 
+from argparse import Namespace
+
 from evolution_figures import create_usage_evolution
 from metrics.kl import KLdivergence, JSDistance
 from metrics.kl import KLDivergenceUnivariate
@@ -37,15 +39,15 @@ def main (args):
             args.experiment_dir = root_dir+dir
             try:
                 print("Computing metrics for directory ", dir)
-                saved_metrics, metrics_values = compute_metrics(args)
-                computed_metrics.append(dir+';'+metrics_values)
+                saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
+                computed_metrics.append(dir+';'+saved_experiment_parameters+';'+metrics_values)
             except:
                 print('Error computing experiment dir:', args.experiment_dir)
         with open(root_dir + 'experiments_metrics.csv', 'w') as f:
-            f.write('experiment_dir_name;'+saved_metrics+'\n')
+            f.write('experiment_dir_name;'+'experiment_parameters;'+saved_metrics+'\n')
             for computed_metric in computed_metrics:
                 f.write(computed_metric + '\n')
-            print ("\nCSVs for all experiments metrics results saved in:\n",root_dir + 'experiments_metrics.csv')
+            print ("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
 
     else:
         compute_metrics(args)
@@ -115,7 +117,7 @@ def compute_metrics (args):
         if metric != 'tsne' and metric != 'pca' and metric != 'evolution_figures':
             avg_results[metric] = statistics.mean(metrics_results[metric])
 
-    return save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics)
+    return save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics), saved_experiments_parameters
 
 
 def initialization(args):
