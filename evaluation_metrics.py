@@ -143,7 +143,7 @@ def compute_metrics(args):
                     metrics_results[metric].append(computed_metric)
 
                 n_files_iteration += 1
-        print('\n')
+        print('')
 
 
     for metric, results in metrics_results.items():
