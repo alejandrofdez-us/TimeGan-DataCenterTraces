@@ -48,6 +48,7 @@ def main (args):
 
             except Exception as e:
                 print('Error computing experiment dir:', args.experiment_dir)
+                print(e)
 
         print ("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
     else:
