@@ -23,34 +23,34 @@ from metrics.visualization_metrics import visualization
 import sklearn.metrics as metrics
 
 
-def main (args):
+def main(args):
     if (args.recursive == 'true'):
         root_dir = args.experiment_dir
-        first_level_dirs =[]
+        first_level_dirs = []
         for subdir, dirs, files in os.walk(root_dir):
             first_level_dirs = dirs
             break
         is_header_printed = False
         for dir in first_level_dirs:
-            args.experiment_dir = root_dir+dir
+            args.experiment_dir = root_dir + dir
             try:
                 print("Computing metrics for directory ", dir)
                 saved_metrics, metrics_values, saved_experiment_parameters = compute_metrics(args)
                 parameters_keys, parameters_values = extract_experiment_parameters(saved_experiment_parameters)
-                if(not is_header_printed):
+                if (not is_header_printed):
                     with open(root_dir + 'experiments_metrics.csv', 'w') as f:
                         print("Printing header")
                         f.write('experiment_dir_name;' + parameters_keys + saved_metrics + '\n')
                     is_header_printed = True
 
                 with open(root_dir + 'experiments_metrics.csv', 'a') as f:
-                    f.write(dir+';'+parameters_values+metrics_values+ '\n')
+                    f.write(dir + ';' + parameters_values + metrics_values + '\n')
 
             except Exception as e:
                 print('Error computing experiment dir:', args.experiment_dir)
                 print(e)
 
-        print ("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
+        print("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
     else:
         compute_metrics(args)
 
@@ -67,12 +67,11 @@ def extract_experiment_parameters(saved_experiment_parameters):
     return parameters_keys, parameters_values
 
 
-def compute_metrics (args):
-
+def compute_metrics(args):
     metrics_list, path_to_save_metrics, saved_experiments_parameters, saved_metrics, dataset_info = initialization(args)
 
     ori_data = np.loadtxt(args.ori_data_filename, delimiter=",", skiprows=0)
-    #ori_data[:, [1, 0]] = ori_data[:, [0, 1]] # timestamp como primera columna
+    # ori_data[:, [1, 0]] = ori_data[:, [0, 1]] # timestamp como primera columna
     if "tsne" in metrics_list or "pca" in metrics_list:
         generate_visualization_figures(args, path_to_save_metrics, metrics_list, ori_data)
         metrics_list.remove("tsne")
@@ -81,49 +80,64 @@ def compute_metrics (args):
     metrics_results = {}
     avg_results = {}
     for metric in metrics_list:
-        print ('Computando: ', metric)
+        print('Computing: ', metric)
         metrics_results[metric] = []
-        if (metric == 'mmd' or metric == 'dtw' or metric == 'kl' or metric == 'hi' or metric == 'ks'):
+        if metric == 'mmd' or metric == 'dtw' or metric == 'kl' or metric == 'hi' or metric == 'ks':
             for column in range(ori_data.shape[1]):
                 metrics_results[metric + '-' + str(column)] = []
-                if(metric == 'kl'):
+                if metric == 'kl':
                     metrics_results[metric + '-JSD-' + str(column)] = []
 
         n_files_iteration = 0
-        for filename in os.listdir(args.experiment_dir+'/generated_data'):
+        total_files = len(os.listdir(args.experiment_dir + '/generated_data'))
+        for filename in os.listdir(args.experiment_dir + '/generated_data'):
+            print('Computing: ', metric, '[' + str(n_files_iteration + 1) + '/' + str(total_files) + ']', end='\r')
             ori_data_sample = get_ori_data_sample(args, ori_data)
-            f = os.path.join(args.experiment_dir+'/generated_data', filename)
-            if os.path.isfile(f): # checking if it is a file
+            f = os.path.join(args.experiment_dir + '/generated_data', filename)
+            if os.path.isfile(f):  # checking if it is a file
                 generated_data_sample = np.loadtxt(f, delimiter=",")
                 computed_metric = 0
-                if metric == 'mmd': #mayor valor más distintas son
+                if metric == 'mmd':  # mayor valor más distintas son
                     computed_metric = mmd_rbf(X=ori_data_sample, Y=generated_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric+'-'+str(column)].append(mmd_rbf(generated_data_sample[:,column].reshape(-1, 1), ori_data_sample[:,column].reshape(-1, 1)))
-                if metric == 'dtw': #mayor valor más distintas son
+                        metrics_results[metric + '-' + str(column)].append(
+                            mmd_rbf(generated_data_sample[:, column].reshape(-1, 1),
+                                    ori_data_sample[:, column].reshape(-1, 1)))
+                if metric == 'dtw':  # mayor valor más distintas son
                     computed_metric = compute_dtw(generated_data_sample, ori_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric+'-'+str(column)].append(compute_dtw(generated_data_sample[:,column].reshape(-1, 1), ori_data_sample[:,column].reshape(-1, 1)))
-                if metric == 'kl': #mayor valor peor
+                        metrics_results[metric + '-' + str(column)].append(
+                            compute_dtw(generated_data_sample[:, column].reshape(-1, 1),
+                                        ori_data_sample[:, column].reshape(-1, 1)))
+                if metric == 'kl':  # mayor valor peor
                     computed_metric = KLdivergence(ori_data, generated_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric + '-' + str(column)].append(KLDivergenceUnivariate(ori_data_sample[:,column].reshape(-1, 1), generated_data_sample[:,column].reshape(-1, 1))[0])
-                        metrics_results[metric + '-JSD-' + str(column)].append(JSDistance(ori_data_sample[:, column].reshape(-1, 1), generated_data_sample[:, column].reshape(-1, 1)))
+                        metrics_results[metric + '-' + str(column)].append(
+                            KLDivergenceUnivariate(ori_data_sample[:, column].reshape(-1, 1),
+                                                   generated_data_sample[:, column].reshape(-1, 1))[0])
+                        metrics_results[metric + '-JSD-' + str(column)].append(
+                            JSDistance(ori_data_sample[:, column].reshape(-1, 1),
+                                       generated_data_sample[:, column].reshape(-1, 1)))
                 if metric == 'ks':  # menor valor mejor
                     computed_metric = compute_ks(generated_data_sample, ori_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric + '-' + str(column)].append(compute_ks(generated_data_sample[:,column].reshape(-1, 1), ori_data_sample[:,column].reshape(-1, 1)))
-                if metric == 'cc': #mayor valor peor. covarianza
+                        metrics_results[metric + '-' + str(column)].append(
+                            compute_ks(generated_data_sample[:, column].reshape(-1, 1),
+                                       ori_data_sample[:, column].reshape(-1, 1)))
+                if metric == 'cc':  # mayor valor peor. covarianza
                     computed_metric = compute_cc(generated_data_sample, ori_data_sample)
-                if metric == 'cp': #mayor valor peor. coeficiente de pearson
+                if metric == 'cp':  # mayor valor peor. coeficiente de pearson
                     computed_metric = compute_cp(generated_data_sample, ori_data_sample)
                 if metric == 'hi':  # mayor valor peor
                     computed_metric = compute_hi(generated_data_sample, ori_data_sample)
                     for column in range(generated_data_sample.shape[1]):
-                        metrics_results[metric+'-'+str(column)].append(compute_hi(generated_data_sample[:,column].reshape(-1, 1), ori_data_sample[:,column].reshape(-1, 1)))
+                        metrics_results[metric + '-' + str(column)].append(
+                            compute_hi(generated_data_sample[:, column].reshape(-1, 1),
+                                       ori_data_sample[:, column].reshape(-1, 1)))
                 if metric == 'evolution_figures':
-                    if n_files_iteration % 10 == 0: #generates a 10% of the figures
-                        create_usage_evolution(generated_data_sample, ori_data, ori_data_sample, path_to_save_metrics+'figures/', n_files_iteration, dataset_info)
+                    if n_files_iteration % 10 == 0:  # generates a 10% of the figures
+                        create_usage_evolution(generated_data_sample, ori_data, ori_data_sample,
+                                               path_to_save_metrics + 'figures/', n_files_iteration, dataset_info)
                 if metric != 'evolution_figures':
                     metrics_results[metric].append(computed_metric)
 
@@ -132,7 +146,8 @@ def compute_metrics (args):
     for metric, results in metrics_results.items():
         if metric != 'tsne' and metric != 'pca' and metric != 'evolution_figures':
             avg_results[metric] = statistics.mean(metrics_results[metric])
-    saved_metrics, metrics_values, = save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics)
+    saved_metrics, metrics_values, = save_metrics(avg_results, metrics_results, path_to_save_metrics,
+                                                  saved_experiments_parameters, saved_metrics)
     return saved_metrics, metrics_values, saved_experiments_parameters
 
 
@@ -144,7 +159,7 @@ def initialization(args):
     saved_metrics = f.readline()
     args.seq_len = int(re.search("\Wseq_len=([^,}]+)\)", saved_experiments_parameters).group(1))
     os.makedirs(path_to_save_metrics, exist_ok=True)
-    os.makedirs(path_to_save_metrics+'/figures/', exist_ok=True)
+    os.makedirs(path_to_save_metrics + '/figures/', exist_ok=True)
 
     metrics_list = [metric for metric in args.metrics.split(',')]
 
@@ -243,28 +258,36 @@ def results_for_excel(avg_results):
     metrics_values = ''
     computed_metrics = ''
     for metric_name in avg_results:
-        computed_metrics += metric_name+';'
-        metrics_values += str(avg_results[metric_name]).replace('.', ',')+';'
+        computed_metrics += metric_name + ';'
+        metrics_values += str(avg_results[metric_name]).replace('.', ',') + ';'
 
     return computed_metrics, metrics_values
 
+
 def save_metrics(avg_results, metrics_results, path_to_save_metrics, saved_experiments_parameters, saved_metrics):
-    data_name = re.search("\Wdata_name=([^,}]+)", saved_experiments_parameters).group(1).replace("'","")
+    data_name = re.search("\Wdata_name=([^,}]+)", saved_experiments_parameters).group(1).replace("'", "")
     iterations = re.search("\Witeration=([^,}]+)", saved_experiments_parameters).group(1)
     seq_len = re.search("\Wseq_len=([^,}]+)\)", saved_experiments_parameters).group(1)
-    with open(path_to_save_metrics + '/metrics-'+data_name+'-iterations-'+iterations+'-seq_len'+seq_len+'.txt', 'w') as f:
+    with open(
+            path_to_save_metrics + '/metrics-' + data_name + '-iterations-' + iterations + '-seq_len' + seq_len + '.txt',
+            'w') as f:
         f.write(saved_experiments_parameters + '\n\n')
-        f.write(saved_metrics +'\n\n')
+        f.write(saved_metrics + '\n\n')
         f.write(repr(avg_results) + '\n')
         computed_metrics, metrics_values = results_for_excel(avg_results)
-        f.write( 'Results of the following metrics: ' + computed_metrics + ' in spanish locale Excel format:' + '\n' + metrics_values + '\n')
+        f.write(
+            'Results of the following metrics: ' + computed_metrics + ' in spanish locale Excel format:' + '\n' + metrics_values + '\n')
         f.write(repr(metrics_results))
     print("Metrics saved in file", f.name)
     return computed_metrics, metrics_values
 
-def compute_ks (generated_data_sample, ori_data_sample):
+
+def compute_ks(generated_data_sample, ori_data_sample):
     column_indexes = range(generated_data_sample.shape[1])
-    return statistics.mean([scipy.stats.ks_2samp(generated_data_sample[:,column_index], ori_data_sample[:,column_index])[0] for column_index in column_indexes])
+    return statistics.mean(
+        [scipy.stats.ks_2samp(generated_data_sample[:, column_index], ori_data_sample[:, column_index])[0] for
+         column_index in column_indexes])
+
 
 def compute_dtw(generated_data_sample, ori_data_sample):
     sample_lenght = len(generated_data_sample)
@@ -275,35 +298,38 @@ def compute_dtw(generated_data_sample, ori_data_sample):
 
     return dtw_ndim.distance_fast(processed_generated_data_sample, processed_ori_data_sample)
 
+
 def compute_cp(generated_data_sample, ori_data_sample):
-    #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
-    #normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
+    # normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
+    # normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
     ori_data_sample_pearson = np.corrcoef(ori_data_sample)
     generated_data_sample_pearson = np.corrcoef(generated_data_sample)
     correlation_diff_matrix = ori_data_sample_pearson - generated_data_sample_pearson
     l1_norms_avg = np.mean([np.linalg.norm(row) for row in correlation_diff_matrix])
     return l1_norms_avg
 
+
 def compute_cc(generated_data_sample, ori_data_sample):
-    #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
-    #normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
+    # normalized_ori_data_sample = normalize_start_time_to_zero(ori_data_sample)
+    # normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
     ori_data_sample_covariance = np.cov(ori_data_sample)
     generated_data_covariance = np.cov(generated_data_sample)
     covariance_diff_matrix = ori_data_sample_covariance - generated_data_covariance
     l1_norms_avg = np.mean([np.linalg.norm(row) for row in covariance_diff_matrix])
     return l1_norms_avg
 
+
 def compute_hi(generated_data_sample, ori_data):
-    #normalized_ori_data_sample = normalize_start_time_to_zero(ori_data)
-    #normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
-    histogram_diff_matrix=[]
-    for column in range(0,ori_data.shape[1]):
-       ori_data_column_values = ori_data[:,column]
-       ori_histogram,ori_bin_edges = np.histogram(ori_data_column_values)
-       generated_data_column_values = generated_data_sample[:, column]
-       generated_histogram, generated_bin_edges = np.histogram(generated_data_column_values)
-       column_histogram_diff = ori_histogram - generated_histogram
-       histogram_diff_matrix.append(column_histogram_diff)
+    # normalized_ori_data_sample = normalize_start_time_to_zero(ori_data)
+    # normalized_generated_data_sample = normalize_start_time_to_zero(generated_data_sample)
+    histogram_diff_matrix = []
+    for column in range(0, ori_data.shape[1]):
+        ori_data_column_values = ori_data[:, column]
+        ori_histogram, ori_bin_edges = np.histogram(ori_data_column_values)
+        generated_data_column_values = generated_data_sample[:, column]
+        generated_histogram, generated_bin_edges = np.histogram(generated_data_column_values)
+        column_histogram_diff = ori_histogram - generated_histogram
+        histogram_diff_matrix.append(column_histogram_diff)
     histogram_diff_matrix = np.asmatrix(histogram_diff_matrix)
     l1_norms_histogram_diff = np.apply_along_axis(np.linalg.norm, 1, histogram_diff_matrix)
 
@@ -311,12 +337,14 @@ def compute_hi(generated_data_sample, ori_data):
 
     return l1_norms_histogram_diff_avg
 
-def normalize_start_time_to_zero (sample):
-    timestamp_column =  sample[:,0]
+
+def normalize_start_time_to_zero(sample):
+    timestamp_column = sample[:, 0]
     min_timestamp = np.min(timestamp_column)
-    normalized_timestamp_column=timestamp_column - min_timestamp
-    sample[:,0]=normalized_timestamp_column
+    normalized_timestamp_column = timestamp_column - min_timestamp
+    sample[:, 0] = normalized_timestamp_column
     return sample
+
 
 def get_ori_data_sample(args, ori_data):
     ori_data_sample_start = random.randrange(0, len(ori_data) - args.seq_len)
@@ -329,8 +357,8 @@ def generate_visualization_figures(args, directory_name, metrics_list, ori_data)
     ori_data_for_visualization = preprocess_dataset(ori_data, args.seq_len)
     generated_data = []
     n_samples = 0
-    for filename in os.listdir(args.experiment_dir+'/generated_data'):
-        f = os.path.join(args.experiment_dir+'/generated_data', filename)
+    for filename in os.listdir(args.experiment_dir + '/generated_data'):
+        f = os.path.join(args.experiment_dir + '/generated_data', filename)
         if os.path.isfile(f):  # checking if it is a file
             n_samples = n_samples + 1
             generated_data_sample = np.loadtxt(f, delimiter=",")
@@ -360,7 +388,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--seq_len',
         type=int)
-    #implementar diccionario de configuración por tipo de traza
+    # implementar diccionario de configuración por tipo de traza
     parser.add_argument(
         '--trace',
         default='alibaba2018',
