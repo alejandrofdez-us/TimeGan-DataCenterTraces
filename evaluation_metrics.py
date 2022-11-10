@@ -7,6 +7,8 @@ import statistics
 import numpy as np
 import pandas as pd
 import scipy
+import fnmatch
+
 
 from argparse import Namespace
 
@@ -88,7 +90,7 @@ def compute_metrics(args):
                     metrics_results[metric + '-JSD-' + str(column)] = []
 
         n_files_iteration = 0
-        total_files = len(os.listdir(args.experiment_dir + '/generated_data'))
+        total_files = len(fnmatch.filter(os.listdir(args.experiment_dir + '/generated_data'), '*.csv'))
         for filename in os.listdir(args.experiment_dir + '/generated_data'):
             print('Computing: ', metric, '[' + str(n_files_iteration + 1) + '/' + str(total_files) + ']', end='\r')
             ori_data_sample = get_ori_data_sample(args, ori_data)
