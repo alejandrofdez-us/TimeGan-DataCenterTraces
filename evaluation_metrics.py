@@ -96,6 +96,7 @@ def compute_metrics(args):
             ori_data_sample = get_ori_data_sample(args, ori_data)
             f = os.path.join(args.experiment_dir + '/generated_data', filename)
             if os.path.isfile(f):  # checking if it is a file
+                print("loading file", f.name)
                 generated_data_sample = np.loadtxt(f, delimiter=",")
                 computed_metric = 0
                 if metric == 'mmd':  # mayor valor más distintas son
