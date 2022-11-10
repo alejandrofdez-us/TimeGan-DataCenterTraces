@@ -80,7 +80,6 @@ def compute_metrics(args):
     metrics_results = {}
     avg_results = {}
     for metric in metrics_list:
-        print('Computing: ', metric)
         metrics_results[metric] = []
         if metric == 'mmd' or metric == 'dtw' or metric == 'kl' or metric == 'hi' or metric == 'ks':
             for column in range(ori_data.shape[1]):
@@ -142,6 +141,8 @@ def compute_metrics(args):
                     metrics_results[metric].append(computed_metric)
 
                 n_files_iteration += 1
+        print('\n')
+
 
     for metric, results in metrics_results.items():
         if metric != 'tsne' and metric != 'pca' and metric != 'evolution_figures':
