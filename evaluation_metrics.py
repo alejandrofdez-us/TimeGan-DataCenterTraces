@@ -8,9 +8,8 @@ import numpy as np
 import pandas as pd
 import scipy
 import fnmatch
+import traceback
 
-
-from argparse import Namespace
 
 from evolution_figures import create_usage_evolution
 from metrics.kl import KLdivergence, JSDistance
@@ -51,6 +50,7 @@ def main(args):
             except Exception as e:
                 print('Error computing experiment dir:', args.experiment_dir)
                 print(e)
+                traceback.print_exc()
 
         print("\nCSVs for all experiments metrics results saved in:\n", root_dir + 'experiments_metrics.csv')
     else:
