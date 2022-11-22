@@ -32,6 +32,7 @@ from datetime import datetime
 
 import numpy as np
 import warnings
+
 warnings.filterwarnings("ignore")
 
 # 1. TimeGAN model
@@ -44,8 +45,8 @@ from metrics.predictive_metrics import predictive_score_metrics
 from metrics.visualization_metrics import visualization
 
 
-def main (args, experiment_root_directory_name):
-  """Main function for timeGAN experiments.
+def main(args, experiment_root_directory_name):
+    """Main function for timeGAN experiments.
   
   Args:
     - data_name: sine, stock, or energy
@@ -64,149 +65,158 @@ def main (args, experiment_root_directory_name):
     - generated_data: generated synthetic data
     - metric_results: discriminative and predictive scores
   """
-  ## Data loading
-  if args.data_name in ['stock', 'energy','trivial','natural','google_instance_week1','machine_usage_grouped_days_3-4-5-6','machine_usage_complete_grouped','batchtaskday3','alibaba100','alibaba500','alibaba1000','alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped','alibabacompletogroupedhour', 'alibabacompletogroupednotimestamp']:
-    ori_data = real_data_loading(args.data_name, args.seq_len)
-  elif args.data_name == 'sine':
-    # Set number of samples and its dimensions
-    no, dim = 10000, 5
-    ori_data = sine_data_generation(no, args.seq_len, dim)
-    
-  print(args.data_name + ' dataset is ready.')
-    
-  ## Synthetic data generation by TimeGAN
-  # Set newtork parameters
-  parameters = dict()  
-  parameters['module'] = args.module
-  parameters['hidden_dim'] = args.hidden_dim
-  parameters['num_layer'] = args.num_layer
-  parameters['iterations'] = args.iteration
-  parameters['batch_size'] = args.batch_size
-  parameters['n_samples'] = args.n_samples
-  n_samples = args.n_samples
-      
-  generated_data = timegan(ori_data, parameters, experiment_root_directory_name)
-  print('Finish Synthetic Data Generation')
-  
-  ## Performance metrics   
-  # Output initialization
-  metric_results = dict()
-  
-  # 1. Discriminative Score
-  discriminative_score = list()
-  i=1
-  for _ in range(args.metric_iteration):
-    print("Iteracion", i, "de", args.metric_iteration,"de discriminative score")
-    i += 1
-    temp_disc = discriminative_score_metrics(ori_data, generated_data, args.internal_discriminative_iteration)
-    discriminative_score.append(temp_disc)
-      
-  metric_results['discriminative'] = np.mean(discriminative_score)
-      
-  # 2. Predictive score
-  predictive_score = list()
-  i=1
-  for tt in range(args.metric_iteration):
-    print("Iteracion",i, "de", args.metric_iteration,"de predictive score")
-    i+=1
-    temp_pred = predictive_score_metrics(ori_data, generated_data, args.internal_predictive_iteration)
-    predictive_score.append(temp_pred)
+    ## Data loading
+    if args.data_name in ['stock', 'energy', 'google_instance_week1', 'alibaba2018']:
+        ori_data = real_data_loading(args.data_name, args.seq_len)
+        print(args.data_name + ' dataset is ready.')
+    elif args.data_name == 'sine':
+        # Set number of samples and its dimensions
+        no, dim = 10000, 5
+        ori_data = sine_data_generation(no, args.seq_len, dim)
+        print(args.data_name + ' dataset is ready.')
 
-  print("Finalizando scores de prediccion")
-  metric_results['predictive'] = np.mean(predictive_score)
-  # Print discriminative and predictive scores
-  print(metric_results)
+    ## Synthetic data generation by TimeGAN
+    # Set newtork parameters
+    parameters = dict()
+    parameters['module'] = args.module
+    parameters['hidden_dim'] = args.hidden_dim
+    parameters['num_layer'] = args.num_layer
+    parameters['iterations'] = args.iteration
+    parameters['batch_size'] = args.batch_size
+    parameters['n_samples'] = args.n_samples
+    n_samples = args.n_samples
 
-  # 3. Visualization (PCA and tSNE)
-  print("Creando graficas PCA y tSNE")
-  visualization(ori_data, generated_data, 'pca', experiment_root_directory_name, n_samples)
-  visualization(ori_data, generated_data, 'tsne', experiment_root_directory_name, n_samples)
+    generated_data = timegan(ori_data, parameters, experiment_root_directory_name)
+    print('Finish Synthetic Data Generation')
 
-  return ori_data, generated_data, metric_results
+    ## Performance metrics
+    # Output initialization
+    metric_results = dict()
+    metric_results['discriminative'] = 0
+    metric_results['predictive'] = 0
+
+    # 1. Discriminative Score
+    # discriminative_score = list()
+    # i=1
+    # for _ in range(args.metric_iteration):
+    #   print("Iteracion", i, "de", args.metric_iteration,"de discriminative score")
+    #   i += 1
+    #   temp_disc = discriminative_score_metrics(ori_data, generated_data, args.internal_discriminative_iteration)
+    #   discriminative_score.append(temp_disc)
+    #
+    # metric_results['discriminative'] = np.mean(discriminative_score)
+
+    # # 2. Predictive score
+    # predictive_score = list()
+    # i=1
+    # for tt in range(args.metric_iteration):
+    #   print("Iteracion",i, "de", args.metric_iteration,"de predictive score")
+    #   i+=1
+    #   temp_pred = predictive_score_metrics(ori_data, generated_data, args.internal_predictive_iteration)
+    #   predictive_score.append(temp_pred)
+    #
+    # print("Finalizando scores de prediccion")
+    # metric_results['predictive'] = np.mean(predictive_score)
+    # # Print discriminative and predictive scores
+    # print(metric_results)
+
+    # 3. Visualization (PCA and tSNE)
+    print("Creando graficas PCA y tSNE")
+    visualization(ori_data, generated_data, 'pca', experiment_root_directory_name, n_samples)
+    visualization(ori_data, generated_data, 'tsne', experiment_root_directory_name, n_samples)
+
+    return ori_data, generated_data, metric_results
 
 
-if __name__ == '__main__':  
-  
-  # Inputs for the main function
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--data_name',
-      choices=['sine','stock','energy','trivial','natural','google_instance_week1','machine_usage_grouped_days_3-4-5-6','machine_usage_complete_grouped','batchtaskday3','alibaba100','alibaba500','alibaba1000', 'alibaba10k','alibaba50k','alibaba50kcut','alibaba1M', 'alibabacompleto', 'alibabacompletocut', 'alibabacompletocutordered', 'alibabacompletogrouped', 'alibabacompletogroupedhour','alibabacompletogroupednotimestamp'],
-      default='stock',
-      type=str)
-  parser.add_argument(
-      '--seq_len',
-      help='sequence length',
-      default=24,
-      type=int)
-  parser.add_argument(
-      '--module',
-      choices=['gru','lstm','lstmLN'],
-      default='gru',
-      type=str)
-  parser.add_argument(
-      '--hidden_dim',
-      help='hidden state dimensions (should be optimized)',
-      default=24,
-      type=int)
-  parser.add_argument(
-      '--num_layer',
-      help='number of layers (should be optimized)',
-      default=3,
-      type=int)
-  parser.add_argument(
-      '--iteration',
-      help='Training iterations (should be optimized)',
-      default=50000,
-      type=int)
-  parser.add_argument(
-      '--batch_size',
-      help='the number of samples in mini-batch (should be optimized)',
-      default=128,
-      type=int)
-  parser.add_argument(
-      '--metric_iteration',
-      help='iterations of the metric computation',
-      default=10,
-      type=int)
-  parser.add_argument(
-      '--n_samples',
-      help='number of samples to be generated',
-      default=150,
-      type=int)
-  parser.add_argument(
-      '--internal_discriminative_iteration',
-      help='internal iterations of discriminative scoring',
-      default=2000,
-      type=int)
-  parser.add_argument(
-      '--internal_predictive_iteration',
-      help='internal iterations of predictive scoring',
-      default=5000,
-      type=int)
-  
-  args = parser.parse_args()
+if __name__ == '__main__':
 
-  experiment_root_directory_name = "experiments/" + args.data_name + '_' + str(args.iteration) + '-' + datetime.now().strftime("%j-%Y-%H-%M")+"/"
+    # Inputs for the main function
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--data_name',
+        choices=['sine', 'stock', 'energy', 'trivial', 'natural', 'google_instance_week1', 'alibaba2018'],
+        default='stock',
+        type=str)
+    parser.add_argument(
+        '--seq_len',
+        help='sequence length',
+        default=24,
+        type=int)
+    parser.add_argument(
+        '--module',
+        choices=['gru', 'lstm', 'lstmLN'],
+        default='gru',
+        type=str)
+    parser.add_argument(
+        '--experiment_save_dir',
+        default='experiments/',
+        type=str)
+    parser.add_argument(
+        '--hidden_dim',
+        help='hidden state dimensions (should be optimized)',
+        default=24,
+        type=int)
+    parser.add_argument(
+        '--num_layer',
+        help='number of layers (should be optimized)',
+        default=3,
+        type=int)
+    parser.add_argument(
+        '--iteration',
+        help='Training iterations (should be optimized)',
+        default=50000,
+        type=int)
+    parser.add_argument(
+        '--batch_size',
+        help='the number of samples in mini-batch (should be optimized)',
+        default=128,
+        type=int)
+    parser.add_argument(
+        '--metric_iteration',
+        help='iterations of the metric computation',
+        default=10,
+        type=int)
+    parser.add_argument(
+        '--n_samples',
+        help='number of samples to be generated',
+        default=150,
+        type=int)
+    parser.add_argument(
+        '--internal_discriminative_iteration',
+        help='internal iterations of discriminative scoring',
+        default=2000,
+        type=int)
+    parser.add_argument(
+        '--internal_predictive_iteration',
+        help='internal iterations of predictive scoring',
+        default=5000,
+        type=int)
 
-  # Calls main function
-  ori_data, generated_data, metrics = main(args, experiment_root_directory_name)
+    args = parser.parse_args()
 
-  print("Metrics")
-  print(metrics)
+    # experiment_root_directory_name = "experiments/" + args.data_name + '_' + str(args.iteration) + '-' + datetime.now().strftime("%j-%Y-%H-%M")+"/"
+    experiment_root_directory_name = args.experiment_save_dir + "/" + 'iter-' + str(
+        args.iteration) + '_' + 'num_layer-' + str(args.num_layer) + '_' + 'hidden_dim-' + str(
+        args.hidden_dim) + '_' + 'module-' + str(args.module) + '/'
+    # Calls main function
+    ori_data, generated_data, metrics = main(args, experiment_root_directory_name)
 
-  generated_data_np_array = np.asarray(generated_data)
-  i=0
-  directory_name = experiment_root_directory_name +"generated_data/"
-  os.makedirs(directory_name, exist_ok=True)
+    print("Metrics")
+    print(metrics)
 
-  with open(experiment_root_directory_name + 'metrics.txt', 'w') as f:
-      f.write(repr(metrics))
+    generated_data_np_array = np.asarray(generated_data)
+    i = 0
+    directory_name = experiment_root_directory_name + "generated_data/"
+    os.makedirs(experiment_root_directory_name, exist_ok=True)
+    os.makedirs(directory_name, exist_ok=True)
 
-  text_file = open(experiment_root_directory_name+"parameters.txt", "w")
-  n = text_file.write(str(args))
-  text_file.close()
+    with open(experiment_root_directory_name + 'metrics.txt', 'w') as f:
+        f.write(repr(metrics))
 
-  for generated_sample in generated_data_np_array:
-      np.savetxt(directory_name + "sample_"+ str(i) +".csv", generated_sample, delimiter=",", fmt='%f')
-      i=i+1
+    text_file = open(experiment_root_directory_name + "parameters.txt", "w")
+    n = text_file.write(str(args))
+    text_file.close()
+
+    for generated_sample in generated_data_np_array:
+        np.savetxt(directory_name + "sample_" + str(i) + ".csv", generated_sample, delimiter=",", fmt='%f')
+        i = i + 1
