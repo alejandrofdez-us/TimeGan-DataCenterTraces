@@ -117,7 +117,6 @@ def real_data_loading(data_name, seq_len):
 
     # Preprocess the dataset
     temp_data = []
-    print("Cortando los datos.")
     # Cut data by sequence length
     for i in range(0, len(ori_data) - seq_len + 1):
         _x = ori_data[i:i + seq_len]

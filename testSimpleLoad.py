@@ -22,6 +22,9 @@ def load_tf1(model_directory, Z_mb, ori_data, ori_time, n_samples):
       myinput_z = sig_def.inputs['myinput_z'].name
       myinput_t = sig_def.inputs['myinput_t'].name
 
+      print("myinput_x", myinput_x)
+      print("myinput_z", myinput_z)
+      print("myinput_t", myinput_t)
 
       x_hat = sig_def.outputs['x_hat'].name
 
@@ -38,22 +41,22 @@ def load_tf1(model_directory, Z_mb, ori_data, ori_time, n_samples):
       generated_data = generated_data + min_val
 
       generated_data_np_array = np.asarray(generated_data)
-      i = 0
+      i = 10000
       directory_name = model_directory+"/generated_data/"
       os.makedirs(directory_name, exist_ok=True)
       for generated_sample in generated_data_np_array:
-        np.savetxt(directory_name + "sample-" + str(i) + ".csv", generated_sample, delimiter=",", fmt='%f')
+        np.savetxt(directory_name + "sample_" + str(i) + ".csv", generated_sample, delimiter=",", fmt='%f')
         i = i + 1
 
 
 
 # random_generator variables
-n_samples = 100
-dim = 4
+n_samples = 10
+dim = 5
 z_dim = dim
-data_name = "alibabacompletocut"
-seq_len = 100
-model_directory = "experiments/alibabacompletocut10-13-2022-21-22/models"
+data_name = "alibaba2018"
+seq_len = 288
+model_directory = "/home/afdez/experiments/timegan/alibaba2018/test-epochs/iter-100_num_layer-4_hidden_dim-20_module-gru/checkpoints/epoch_99"
 
 
 ori_data = real_data_loading(data_name, seq_len)

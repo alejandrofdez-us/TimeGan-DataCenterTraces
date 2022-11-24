@@ -165,3 +165,15 @@ def batch_generator(data, time, batch_size):
   T_mb = list(time[i] for i in train_idx)
   
   return X_mb, T_mb
+
+
+def save_losses_csv(experiment_dir, losses):
+    excel_string = f'iteration;'
+    for loss_name in losses:
+        excel_string += f'{loss_name};'
+    excel_string +='\n'
+    for iteration, losses_tuple in enumerate(zip(*losses.values())):
+      excel_string += f'{iteration};{";".join(map(str, losses_tuple)).replace(".", ",")}\n'
+
+    with open(f'{experiment_dir}/losses.csv', 'w') as f:
+        f.write(excel_string)

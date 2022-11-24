@@ -204,8 +204,8 @@ if __name__ == '__main__':
     print("Metrics")
     print(metrics)
 
-    generated_data_np_array = np.asarray(generated_data)
-    i = 0
+    # generated_data_np_array = np.asarray(generated_data)
+    # i = 0
     directory_name = experiment_root_directory_name + "generated_data/"
     os.makedirs(experiment_root_directory_name, exist_ok=True)
     os.makedirs(directory_name, exist_ok=True)
@@ -217,6 +217,6 @@ if __name__ == '__main__':
     n = text_file.write(str(args))
     text_file.close()
 
-    for generated_sample in generated_data_np_array:
-        np.savetxt(directory_name + "sample_" + str(i) + ".csv", generated_sample, delimiter=",", fmt='%f')
-        i = i + 1
+    # for generated_sample in generated_data_np_array:
+    #     np.savetxt(directory_name + "sample_" + str(i) + ".csv", generated_sample, delimiter=",", fmt='%f')
+    #     i = i + 1
